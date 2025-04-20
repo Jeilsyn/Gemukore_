@@ -7,7 +7,7 @@ import Button from "../ui/Button";
 import { ID, Permission } from "appwrite";
 import { useUser } from "../../context/AuthContext.jsx";
 
-// ID de tu bucket
+// ID de tu bucket 
 const BUCKET_ID = "680535cc003ac74d78f1";
 
 const CrearPerfil = () => {
