@@ -53,7 +53,6 @@ const RegisterForm = () => {
 
   return (
     <div className="registerPage">
-      <h2>Registro</h2>
       <form onSubmit={handleRegister}>
         <Input id="username" label="Username" value={form.username} onChange={handleChange} />
         <Input id="email" label="Email" type="email" value={form.email} onChange={handleChange} />

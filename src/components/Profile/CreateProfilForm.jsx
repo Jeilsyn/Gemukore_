@@ -5,7 +5,9 @@ import { useNavigate } from "react-router-dom";
 import Input from "../ui/InputPerfil";
 import Button from "../ui/Button";
 import { ID, Permission } from "appwrite";
-import { useUser } from "../../context/AuthContext.jsx";
+import { Link } from "react-router-dom";
+
+
 
 // ID de tu bucket 
 const BUCKET_ID = "680535cc003ac74d78f1";
@@ -147,16 +149,18 @@ const CrearPerfil = () => {
 
       await createUserProfile(profileData); // Crear el perfil en la base de datos
       alert("Perfil creado con éxito");
-      navigate("/pages/Home");
+      navigate("/CrearPrefJuegos");
     } catch (err) {
       console.error("Error al crear perfil:", err);
       alert(`Error al crear perfil: ${err.message}`);
     }
   };
 
+  
+
   return (
     <div className="profile-form-container">
-      <h2>Completa tu perfil</h2>
+      <h2>Completa tu perfil {form.nombre_usuario}</h2>
       <form onSubmit={handleSubmit}>
         <Input
           label="Nombre de Usuario"
@@ -259,7 +263,7 @@ const CrearPerfil = () => {
 
         <Button type="submit">Guardar Perfil</Button>
       </form>
-    </div>
+    </div> 
   );
 };
 

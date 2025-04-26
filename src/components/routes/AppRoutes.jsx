@@ -3,7 +3,7 @@ import { Register } from "../../pages/Register";
 import { Login } from "../../pages/Login";
 import { Home } from "../../pages/Home";
 import { CreatePerfil } from '../../pages/CreatePerfil'
-
+import {CreatePrefGame} from '../../pages/CreatePrefGame'
 
 //Todas las rutas están aqui
 function AppRoutes() {
@@ -14,6 +14,7 @@ function AppRoutes() {
             <Route path="/register" element={<Register />} />
             <Route path="/" element={<Home />} />
             <Route path="/crearPerfil" element={<CreatePerfil />} />
+            <Route path="/CrearPrefJuegos" element={<CreatePrefGame />} />
         </Routes>
     )
 

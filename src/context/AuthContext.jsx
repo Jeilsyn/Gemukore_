@@ -15,18 +15,22 @@ export function useUser() {
 export function UserProvider(props) {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+      const [canAccessCreatePerfil, setcanAccessCreatePerfil] = useState(false);
 
   //Intentar inicio de sesión con Appwrite
   async function login(email, password, isRegistering = false) {
     try {
       const loggedIn = await account.createEmailPasswordSession(email, password);
+
       //guarda en el estado 
       setUser(loggedIn);
+      setcanAccessCreatePerfil(false);
 
       // Redirección específica a Home.jsx después de 1.5 segundos
       if (!isRegistering) {
         setTimeout(() => {
-        }, 1500);
+        }, 2500);
+        navigate("/")
       }
 
 
@@ -67,7 +71,7 @@ export function UserProvider(props) {
 
   //Devuelve los componentes hijos(current-->(actual usuario ), login,logout,register)
   return (
-    <UserContext.Provider value={{ current: user, login, logout, register }}>
+    <UserContext.Provider value={{ current: user, login, logout, register,canAccessCreatePerfil,setcanAccessCreatePerfil }}>
       {props.children}
     </UserContext.Provider>
   );

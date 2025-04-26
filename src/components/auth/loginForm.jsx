@@ -20,6 +20,7 @@ const LoginForm = () => {
     try {
       await user.login(email, password);
       setValid("¡Inicio de sesión exitoso! Redirigiendo...");
+      
     } catch (err) {
       setError(err.message || "Credenciales incorrectas. Intenta de nuevo.");
     } finally {
