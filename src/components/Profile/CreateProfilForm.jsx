@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 
 
 // ID de tu bucket 
-const BUCKET_ID = "680535cc003ac74d78f1";
+const BUCKET_ID = "680e342900053bdb9610";
 
 const CrearPerfil = () => {
   const [form, setForm] = useState({
@@ -124,17 +124,18 @@ const CrearPerfil = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const user = await account.get();
-
+      const user = await account.get(); // Obtén el usuario autenticado
+  
       let imageUrl = form.foto_perfil_url;
       if (file) {
         // Si hay un archivo, subimos la imagen y obtenemos la URL
         imageUrl = await uploadImage(user);
       }
-
+  
       console.log("URL de la imagen:", imageUrl);
-
+  
       const profileData = {
+        usuario_id: user.$id,  // Asegúrate de que el usuario_id está siendo pasado
         nombre_usuario: form.nombre_usuario,
         descripcion: form.descripcion,
         thomcoins: 0,
@@ -146,8 +147,8 @@ const CrearPerfil = () => {
         email: user.email,
         fecha_registro: new Date().toISOString(),
       };
-
-      await createUserProfile(profileData); // Crear el perfil en la base de datos
+  
+      await createUserProfile(profileData, user.$id); // Pasar el user.$id como document_id
       alert("Perfil creado con éxito");
       navigate("/CrearPrefJuegos");
     } catch (err) {
@@ -155,9 +156,7 @@ const CrearPerfil = () => {
       alert(`Error al crear perfil: ${err.message}`);
     }
   };
-
   
-
   return (
     <div className="profile-form-container">
       <h2>Completa tu perfil {form.nombre_usuario}</h2>

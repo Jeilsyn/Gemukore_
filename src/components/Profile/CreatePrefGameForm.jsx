@@ -8,6 +8,9 @@ import Input from '../ui/Input';
 import Button from '../ui/Button';
 
 function CreatePrefGameForm({ userId }) {
+
+
+  
   const [allGames, setAllGames] = useState([]);
   const [search, setSearch] = useState('');
   const [filteredGames, setFilteredGames] = useState([]);
@@ -21,10 +24,10 @@ function CreatePrefGameForm({ userId }) {
     async function fetchGames() {
       try {
         const games = await getAllVideoGames();
-        console.log('Total games loaded:', games.length);
+        console.log('Total juegos cargados:', games.length);
         setAllGames(games);
       } catch (error) {
-        console.error('Error loading games:', error);
+        console.error('Error cargando juegos:', error);
       }
     }
     fetchGames();
@@ -48,8 +51,8 @@ function CreatePrefGameForm({ userId }) {
             const results = await searchVideoGames(value);
             setFilteredGames(results);
           } catch (error) {
-            console.error('Search error:', error);
-            // Fallback a búsqueda client-side si falla la server-side
+            console.error('Error en búsqueda:', error);
+            // Fallback en búsqueda client-side si falla la server-side
             const filtered = allGames.filter(game =>
               game.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
                 .includes(value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""))
@@ -75,34 +78,39 @@ function CreatePrefGameForm({ userId }) {
       alert('Por favor selecciona un videojuego y tu nivel.');
       return;
     }
-
+  
+    // Verificar que userId existe y es válido
+    if (!userId || typeof userId !== 'string') {
+      console.error('ID de usuario inválido:', userId);
+      alert('Error: No se pudo identificar al usuario');
+      return;
+    }
+  
     const profileData = {
-      usuario_id: userId,
+      usuario_id: userId, // Asegurarnos que userId está correctamente asignado
       videojuego_id: selectedGame.$id,
       favorito,
       nivel_juego: nivelJuego,
     };
-
+  
+    console.log('Datos a enviar:', profileData); // Para depuración
+  
     try {
       setLoading(true);
-      await createUserGamesProfile(profileData);
+      const result = await createUserGamesProfile(profileData);
+      console.log('Resultado de creación:', result); // Verificar respuesta
       alert('✅ Preferencia guardada.');
       setSearch('');
       setSelectedGame(null);
       setNivelJuego('');
       setFavorito(false);
     } catch (err) {
-      console.error('Error:', err);
-      alert('❌ Error al guardar preferencia.');
+      console.error('Error al guardar:', err);
+      alert(`❌ Error al guardar preferencia: ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
-
-
-
-
-  
   // Limpiar timeout al desmontar el componente
   useEffect(() => {
     return () => {
@@ -183,3 +191,4 @@ function CreatePrefGameForm({ userId }) {
 }
 
 export default CreatePrefGameForm;
+

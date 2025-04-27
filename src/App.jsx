@@ -6,9 +6,9 @@ import { useEffect } from 'react';
 import { fillVideojuegos, } from '../src/lib/services/appwrite/collections.js'; // tu ruta correcta
 
 function App() {
-  useEffect(() => {
-    fillVideojuegos();
-  }, []);
+  /*   useEffect(() => {
+      fillVideojuegos();
+    }, []); */
   return (
     <Router>
       <UserProvider>
