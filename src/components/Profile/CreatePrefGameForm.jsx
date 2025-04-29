@@ -34,6 +34,7 @@ function CreatePrefGameForm({ userId }) {
   }, []);
 
   const handleSearchChange = async (e) => {
+
     const value = e.target.value;
     setSearch(value);
     setSelectedGame(null);

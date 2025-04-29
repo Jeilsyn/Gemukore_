@@ -150,7 +150,7 @@ const CrearPerfil = () => {
   
       await createUserProfile(profileData, user.$id); // Pasar el user.$id como document_id
       alert("Perfil creado con éxito");
-      navigate("/CrearPrefJuegos");
+      navigate("/LoadingPage");
     } catch (err) {
       console.error("Error al crear perfil:", err);
       alert(`Error al crear perfil: ${err.message}`);

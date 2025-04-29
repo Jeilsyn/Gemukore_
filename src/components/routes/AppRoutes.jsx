@@ -5,6 +5,8 @@ import { Home } from "../../pages/Home";
 import { CreatePerfil } from '../../pages/CreatePerfil'
 import {CreatePrefGame} from '../../pages/CreatePrefGame'
 
+import LoadingPage from '../../pages/loadingPage'
+
 //Todas las rutas están aqui
 function AppRoutes() {
 
@@ -15,6 +17,7 @@ function AppRoutes() {
             <Route path="/" element={<Home />} />
             <Route path="/crearPerfil" element={<CreatePerfil />} />
             <Route path="/CrearPrefJuegos" element={<CreatePrefGame />} />
+            <Route path='/LoadingPage' element={<LoadingPage/>}/>
         </Routes>
     )
 
