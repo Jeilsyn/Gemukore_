@@ -5,11 +5,8 @@ import { useNavigate } from "react-router-dom";
 import Input from "../ui/InputPerfil";
 import Button from "../ui/Button";
 import { ID, Permission } from "appwrite";
-import { Link } from "react-router-dom";
+import Modal from "../ui/Modal"; // <-- Asegúrate de tener este componente creado
 
-
-
-// ID de tu bucket 
 const BUCKET_ID = "680e342900053bdb9610";
 
 const CrearPerfil = () => {
@@ -29,6 +26,7 @@ const CrearPerfil = () => {
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -68,7 +66,6 @@ const CrearPerfil = () => {
 
   const uploadImage = async (user) => {
     if (!file) return null;
-  
     try {
       const response = await storage.createFile(
         BUCKET_ID,
@@ -80,31 +77,15 @@ const CrearPerfil = () => {
           Permission.delete(`user:${user.$id}`),
         ]
       );
-  
-      // Obtener la URL de la imagen - Opción más confiable
-      const fileUrl = storage.getFilePreview(
-        BUCKET_ID,
-        response.$id,
-        500, // ancho
-        500, // alto
-        undefined, // gravedad
-        100, // calidad
-        undefined, // fondo
-        undefined, // borde redondeado
-        0, // borde ancho
-        undefined, // borde color
-        0, // opacidad
-        undefined, // rotación
-        undefined, // modo
-        undefined // formato
-      );
-      
-      return fileUrl.toString(); // Convertir a string explícitamente
+
+      const fileUrl = storage.getFilePreview(BUCKET_ID, response.$id);
+      return fileUrl.toString();
     } catch (error) {
       console.error("Error subiendo imagen:", error);
       throw error;
     }
-  };  
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm({
@@ -124,68 +105,50 @@ const CrearPerfil = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const user = await account.get(); // Obtén el usuario autenticado
-  
+      const user = await account.get();
       let imageUrl = form.foto_perfil_url;
       if (file) {
-        // Si hay un archivo, subimos la imagen y obtenemos la URL
         imageUrl = await uploadImage(user);
       }
-  
-      console.log("URL de la imagen:", imageUrl);
-  
+
       const profileData = {
-        usuario_id: user.$id,  // Asegúrate de que el usuario_id está siendo pasado
         nombre_usuario: form.nombre_usuario,
         descripcion: form.descripcion,
-        thomcoins: 0,
+        thomcoins: 2500,
         nivel_jugador: form.nivel_jugador,
         tema_app: form.tema_app,
         text_size: parseInt(form.text_size),
         idioma: form.idioma,
-        foto_perfil_url: imageUrl || "", // Aquí almacenamos la URL de la imagen
+        foto_perfil_url: imageUrl || "",
         email: user.email,
         fecha_registro: new Date().toISOString(),
+        ultima_bonificacion: new Date().toISOString(), // <-- Para lógica diaria
+        es_eliminado: false
       };
-  
-      await createUserProfile(profileData, user.$id); // Pasar el user.$id como document_id
-      alert("Perfil creado con éxito");
-      navigate("/LoadingPage");
+
+      await createUserProfile(profileData, user.$id);
+      setShowModal(true); // Mostrar explicación
     } catch (err) {
       console.error("Error al crear perfil:", err);
       alert(`Error al crear perfil: ${err.message}`);
     }
   };
-  
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    navigate("/LoadingPage");
+  };
+
   return (
     <div className="profile-form-container">
       <h2>Completa tu perfil {form.nombre_usuario}</h2>
       <form onSubmit={handleSubmit}>
-        <Input
-          label="Nombre de Usuario"
-          name="nombre_usuario"
-          type="text"
-          value={form.nombre_usuario}
-          onChange={handleChange}
-          required
-        />
-
-        <Input
-          label="Descripción"
-          name="descripcion"
-          type="textarea"
-          value={form.descripcion}
-          onChange={handleChange}
-        />
+        <Input label="Nombre de Usuario" name="nombre_usuario" type="text" value={form.nombre_usuario} onChange={handleChange} required />
+        <Input label="Descripción" name="descripcion" type="textarea" value={form.descripcion} onChange={handleChange} />
 
         <div className="form-group">
           <label>Nivel de Jugador</label>
-          <select
-            name="nivel_jugador"
-            value={form.nivel_jugador}
-            onChange={handleSelectChange}
-            className="form-control"
-          >
+          <select name="nivel_jugador" value={form.nivel_jugador} onChange={handleSelectChange}>
             <option value="principiante">Principiante</option>
             <option value="intermedio">Intermedio</option>
             <option value="veterano">Veterano</option>
@@ -194,12 +157,7 @@ const CrearPerfil = () => {
 
         <div className="form-group">
           <label>Tema de la Aplicación</label>
-          <select
-            name="tema_app"
-            value={form.tema_app}
-            onChange={handleSelectChange}
-            className="form-control"
-          >
+          <select name="tema_app" value={form.tema_app} onChange={handleSelectChange}>
             <option value="claro">Claro</option>
             <option value="oscuro">Oscuro</option>
             <option value="contraste">Contraste</option>
@@ -208,12 +166,7 @@ const CrearPerfil = () => {
 
         <div className="form-group">
           <label>Tamaño de Texto</label>
-          <select
-            name="text_size"
-            value={form.text_size}
-            onChange={handleSelectChange}
-            className="form-control"
-          >
+          <select name="text_size" value={form.text_size} onChange={handleSelectChange}>
             <option value={12}>12</option>
             <option value={16}>16</option>
             <option value={18}>18</option>
@@ -222,12 +175,7 @@ const CrearPerfil = () => {
 
         <div className="form-group">
           <label>Idioma</label>
-          <select
-            name="idioma"
-            value={form.idioma}
-            onChange={handleSelectChange}
-            className="form-control"
-          >
+          <select name="idioma" value={form.idioma} onChange={handleSelectChange}>
             <option value="es">Español</option>
             <option value="en">Inglés</option>
           </select>
@@ -235,34 +183,23 @@ const CrearPerfil = () => {
 
         <div className="form-group">
           <label>Foto de Perfil</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="form-control"
-          />
-
-          {uploadProgress > 0 && uploadProgress < 100 && (
-            <div className="progress-bar">
-              <div
-                className="progress-bar-fill"
-                style={{ width: `${uploadProgress}%` }}
-              >
-                {uploadProgress}%
-              </div>
-            </div>
-          )}
-
-          {previewUrl && (
-            <div className="image-preview mt-2">
-              <img src={previewUrl} alt="Vista previa" className="preview-image" />
-            </div>
-          )}
+          <input type="file" accept="image/*" onChange={handleFileChange} />
+          {uploadProgress > 0 && <div className="progress-bar-fill" style={{ width: `${uploadProgress}%` }}>{uploadProgress}%</div>}
+          {previewUrl && <img src={previewUrl} alt="Vista previa" className="preview-image" />}
         </div>
 
         <Button type="submit">Guardar Perfil</Button>
       </form>
-    </div> 
+
+      {showModal && (
+        <Modal onClose={handleCloseModal}>
+          <h3>¡Perfil creado exitosamente!</h3>
+          <p>🎉 Has recibido <strong>2,500 Thomcoins</strong> de bienvenida.</p>
+          <p>💡 Cada vez que hagas un match, se descontarán <strong>100 Thomcoins</strong>.</p>
+          <p>🕒 Cada 24 horas recibirás un bono de <strong>500 Thomcoins</strong> automáticamente.</p>
+        </Modal>
+      )}
+    </div>
   );
 };
 

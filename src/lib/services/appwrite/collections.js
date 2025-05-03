@@ -1,4 +1,3 @@
-import { ID } from "appwrite";
 import { databases } from "./appwriteClient.js"; // Asegúrate que esté bien importado
 import { Query } from "appwrite";
 /* import fs from 'fs';
@@ -6,6 +5,10 @@ import path from 'path';
 
 const videojuegos = JSON.parse(fs.readFileSync(path.resolve('src/data/videojuegos.json'), 'utf8'));
  */
+import { storage } from "./appwriteClient";
+import { ID, Permission } from "appwrite";
+
+const BUCKET_ID = "680e342900053bdb9610";
 const DATABASE_ID = "680e28230014830b3ef3";
 const USUARIOS_COLLECTION_ID = "680e2839001d6f039f0a";
 const USUARIOS_JUEGOS_COLLECTION_ID = "680e29eb00099919fc72";
@@ -29,6 +32,64 @@ export async function createUserProfile(profileData, userId) {
     throw err;
   }
 }
+/**
+ * Sube una imagen al bucket de Appwrite y retorna su URL de vista previa
+ * @param {File} file - Archivo de imagen
+ * @param {string} userId - ID del usuario
+ * @returns {Promise<string>} - URL de la imagen subida
+ */
+export const uploadProfileImage = async (file, userId) => {
+  if (!file) return "";
+
+  try {
+    const response = await storage.createFile(
+      BUCKET_ID,
+      ID.unique(),
+      file,
+      [
+        Permission.read(`user:${userId}`),
+        Permission.update(`user:${userId}`),
+        Permission.delete(`user:${userId}`),
+      ]
+    );
+
+    const previewUrl = storage.getFilePreview(BUCKET_ID, response.$id);
+    return previewUrl.toString();
+  } catch (error) {
+    console.error("Error al subir imagen de perfil:", error);
+    throw error;
+  }
+};
+export async function getUserProfile(userId) {
+  try {
+    const response = await databases.getDocument(
+      DATABASE_ID,
+      USUARIOS_COLLECTION_ID,
+      userId
+    );
+    return response;
+  } catch (err) {
+    console.error("Error obteniendo perfil de usuario:", err);
+    throw err;
+  }
+}
+
+export async function updateUserProfile(userId, profileData) {
+  try {
+    const response = await databases.updateDocument(
+      DATABASE_ID,
+      USUARIOS_COLLECTION_ID,
+      userId,
+      profileData
+    );
+    return response;
+  } catch (err) {
+    console.error("Error actualizando perfil de usuario:", err);
+    throw err;
+  }
+}
+
+
 export async function getAllVideoGames() {
   let allGames = [];
   let lastId = null;
