@@ -6,6 +6,9 @@ import {
 } from '../../lib/services/appwrite/collections';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
+import { useNavigate } from 'react-router-dom';
+
+
 
 function CreatePrefGameForm({ userId }) {
 
@@ -19,7 +22,7 @@ function CreatePrefGameForm({ userId }) {
   const [favorito, setFavorito] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchTimeout, setSearchTimeout] = useState(null);
-
+  const navigate=useNavigate()
   useEffect(() => {
     async function fetchGames() {
       try {
@@ -105,6 +108,7 @@ function CreatePrefGameForm({ userId }) {
       setSelectedGame(null);
       setNivelJuego('');
       setFavorito(false);
+      navigate("/match")
     } catch (err) {
       console.error('Error al guardar:', err);
       alert(`❌ Error al guardar preferencia: ${err.message}`);

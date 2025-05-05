@@ -97,6 +97,7 @@ export default function Settings() {
       });
  
       alert("Perfil actualizado correctamente");
+      navigate("/LoadingPage", { state: { from: 'settings' } });
     } catch (err) {
       console.error(err);
       alert("Error al actualizar perfil");

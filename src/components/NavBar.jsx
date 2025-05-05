@@ -53,6 +53,8 @@ const NavBar = () => {
         {current && profile && (
           <>
             <li><Link to="/settings">Configuración</Link></li>
+            <li><Link to="/match">Match</Link></li>
+            <li><Link to="/requests">Requests</Link></li>
             <li className="nav-info">
               🪙 {profile.thomcoins} Thomcoins
             </li>

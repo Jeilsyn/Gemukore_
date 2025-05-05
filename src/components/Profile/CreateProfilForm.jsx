@@ -136,7 +136,7 @@ const CrearPerfil = () => {
 
   const handleCloseModal = () => {
     setShowModal(false);
-    navigate("/LoadingPage");
+    navigate("/LoadingPage", { state: { from: 'crearPerfil' } });
   };
 
   return (

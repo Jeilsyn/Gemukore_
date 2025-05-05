@@ -1,4 +1,4 @@
-import { Client, Account, Databases,Storage } from 'appwrite';
+import { Client, Account, Databases,Storage,Teams } from 'appwrite';
 
 const client = new Client();
 client.setEndpoint('https://fra.cloud.appwrite.io/v1').setProject('680e27de001ffc71f5a7');
@@ -6,3 +6,4 @@ client.setEndpoint('https://fra.cloud.appwrite.io/v1').setProject('680e27de001ff
 export const account = new Account(client);
 export const databases = new Databases(client);
 export const storage= new Storage(client);
+export const teams = new Teams(client);

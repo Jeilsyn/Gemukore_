@@ -1,0 +1,123 @@
+[
+    {
+      "nombre": "Valorant",
+      "consejo": "Comunícate siempre con tu equipo y utiliza el sonido para anticiparte al enemigo."
+    },
+    {
+      "nombre": "League of Legends",
+      "consejo": "Aprende una posición y unos pocos campeones para mejorar más rápido."
+    },
+    {
+      "nombre": "Counter-Strike: Global Offensive",
+      "consejo": "Practica el recoil y mejora tu puntería con mapas de entrenamiento."
+    },
+    {
+      "nombre": "Call of Duty: Modern Warfare II",
+      "consejo": "Personaliza tu equipamiento según tu estilo de juego y conoce bien los mapas."
+    },
+    {
+      "nombre": "Fortnite",
+      "consejo": "Mejora tus habilidades de construcción para obtener ventaja en los enfrentamientos."
+    },
+    {
+      "nombre": "Apex Legends",
+      "consejo": "Elige leyendas que complementen a tu escuadra y aprovecha el movimiento rápido."
+    },
+    {
+      "nombre": "PUBG: Battlegrounds",
+      "consejo": "Planea tu ruta de loot y mantente dentro del círculo desde el inicio."
+    },
+    {
+      "nombre": "Minecraft",
+      "consejo": "Explora y experimenta; la creatividad es tu mejor herramienta."
+    },
+    {
+      "nombre": "Grand Theft Auto V",
+      "consejo": "Completa misiones secundarias para ganar dinero y desbloquear contenido."
+    },
+    {
+      "nombre": "The Legend of Zelda: Breath of the Wild",
+      "consejo": "Explora cada rincón; los secretos están en todas partes."
+    },
+    {
+      "nombre": "Elden Ring",
+      "consejo": "No temas morir; cada intento es una oportunidad de aprender."
+    },
+    {
+      "nombre": "Overwatch 2",
+      "consejo": "Coordina tus habilidades con las de tu equipo y cambia de héroe cuando sea necesario."
+    },
+    {
+      "nombre": "DOOM (1993)",
+      "consejo": "Mantente en movimiento constante y conoce la ubicación de los pickups."
+    },
+    {
+      "nombre": "World of Warcraft",
+      "consejo": "Únete a una buena guild y sigue las misiones de historia para subir de nivel eficientemente."
+    },
+    {
+      "nombre": "Roblox",
+      "consejo": "Explora distintos juegos y aprende de la comunidad para crear tus propios mundos."
+    },
+    {
+      "nombre": "Among Us",
+      "consejo": "Observa los comportamientos de los jugadores y comunica tus sospechas con lógica."
+    },
+    {
+      "nombre": "FIFA 24",
+      "consejo": "Practica las jugadas a balón parado y domina el timing del pase."
+    },
+    {
+      "nombre": "NBA 2K24",
+      "consejo": "Domina el sistema de tiro y juega con estrategia en defensa."
+    },
+    {
+      "nombre": "Genshin Impact",
+      "consejo": "Administra bien tu resina y construye equipos con sinergias elementales."
+    },
+    {
+      "nombre": "Hogwarts Legacy",
+      "consejo": "Explora cada zona para descubrir secretos y mejorar tus hechizos."
+    },
+    {
+      "nombre": "Resident Evil 4 Remake",
+      "consejo": "Conserva munición, apunta a la cabeza y mejora tus armas sabiamente."
+    },
+    {
+      "nombre": "Rocket League",
+      "consejo": "Practica tus controles aéreos y mantén la rotación con tu equipo."
+    },
+    {
+      "nombre": "Dead by Daylight",
+      "consejo": "Aprende a leer las rutas de escape y mantente siempre alerta del asesino."
+    },
+    {
+      "nombre": "Rust",
+      "consejo": "Juega en equipo, cuida tus recursos y construye en lugares estratégicos."
+    },
+    {
+      "nombre": "ARK: Survival Evolved",
+      "consejo": "Domestica criaturas temprano y protégelas en una buena base."
+    },
+    {
+      "nombre": "The Elder Scrolls V: Skyrim",
+      "consejo": "Explora a tu ritmo y prueba diferentes ramas de habilidades."
+    },
+    {
+      "nombre": "Terraria",
+      "consejo": "Recoge recursos de noche y prepárate bien antes de explorar cuevas profundas."
+    },
+    {
+      "nombre": "Cyberpunk 2077",
+      "consejo": "Mejora tu equipamiento y elige bien tus mejoras de ciberware."
+    },
+    {
+      "nombre": "Fall Guys",
+      "consejo": "Mantén la calma y aprende los patrones de los minijuegos."
+    },
+    {
+      "nombre": "The Witcher 3: Wild Hunt",
+      "consejo": "Lee los bestiarios y prepárate bien antes de cada combate."
+    }
+  ]
+  

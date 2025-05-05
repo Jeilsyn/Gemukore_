@@ -2,8 +2,7 @@ import { ID } from "appwrite";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { account } from "../lib/services/appwrite/appwriteClient";
-import { getUserProfile } from '../lib/services/appwrite/collections';
-
+import { updateUserProfile, getUserProfile } from '../lib/services/appwrite/collections';
 const UserContext = createContext();
 
 export function useUser() {
@@ -18,14 +17,22 @@ export function UserProvider(props) {
   async function login(email, password, isRegistering = false) {
     try {
       await account.createEmailPasswordSession(email, password);
-      const loggedIn = await account.get(); // Obtenemos datos completos del usuario
+      const loggedIn = await account.get(); // Datos del usuario
       setUser(loggedIn);
       setcanAccessCreatePerfil(false);
 
       if (!isRegistering) {
         try {
           const profile = await getUserProfile(loggedIn.$id);
-          if (!profile) {
+          if (profile) {
+            await bonificarSiCorresponde(loggedIn.$id); // 💥 Bonificación
+            // Refrescar los datos del perfil después de la bonificación
+            const updatedProfile = await getUserProfile(loggedIn.$id); // Obtener perfil actualizado
+            setUser((prevState) => ({
+              ...prevState,
+              thomcoins: updatedProfile.thomcoins, // Actualizamos los thomcoins
+            }));
+          } else {
             console.warn("No se encontró perfil del usuario.");
           }
         } catch (err) {
@@ -40,7 +47,24 @@ export function UserProvider(props) {
       throw err;
     }
   }
+  async function bonificarSiCorresponde(userId) {
+    try {
+      const profile = await getUserProfile(userId);
+      const now = new Date();
+      const ultimaBonificacion = new Date(profile.ultima_bonificacion);
+      const diffHours = (now - ultimaBonificacion) / (1000 * 60 * 60);
 
+      if (diffHours >= 24) {
+        await updateUserProfile(userId, {
+          thomcoins: profile.thomcoins + 2500,
+          ultima_bonificacion: now.toISOString()
+        });
+        console.log(`💰 Bonificación aplicada a ${userId}.`);
+      }
+    } catch (error) {
+      console.error("❌ Error al aplicar bonificación:", error);
+    }
+  }
   async function logout() {
     await account.deleteSession("current");
     setUser(null);

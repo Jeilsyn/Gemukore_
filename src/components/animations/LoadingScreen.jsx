@@ -1,27 +1,40 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import consejosJuegos from '../../data/consejos.json'; // Asegúrate de que la ruta sea correcta
+import { useLocation } from 'react-router-dom';
 
 const LoadingPage = () => {
     const navigate = useNavigate();
     const [isVisible, setIsVisible] = useState(true);
-
+    const [consejo, setConsejo] = useState(null);
+    const location = useLocation();
     useEffect(() => {
+        // Elegir consejo aleatorio del JSON
+        const random = Math.floor(Math.random() * consejosJuegos.length);
+        setConsejo(consejosJuegos[random]);
+
         const alreadyReloaded = localStorage.getItem('alreadyReloaded');
 
         if (!alreadyReloaded) {
             localStorage.setItem('alreadyReloaded', 'true');
             window.location.reload();
-            return; // evita continuar en esta carga
+            return;
         }
 
         const timer = setTimeout(() => {
-            setIsVisible(false); // comienza animación de salida
+            setIsVisible(false);
             setTimeout(() => {
-                localStorage.removeItem('alreadyReloaded'); // limpia para futuros usos
+              localStorage.removeItem('alreadyReloaded');
+          
+              // Redirige según el origen
+              if (location.state?.from === 'crearPerfil') {
                 navigate('/CrearPrefJuegos');
-            }, 800); // espera a que termine la animación de salida
-        }, 3000); // tiempo de "carga"
+              } else {
+                navigate('/Settings');
+              }
+            }, 3000);
+          }, 3000);
 
         return () => clearTimeout(timer);
     }, [navigate]);
@@ -47,8 +60,18 @@ const LoadingPage = () => {
                         transition={{ duration: 0.8, delay: 0.5 }}
                         style={styles.text}
                     >
-                        Registrando Jugador...
+                        Espere...
                     </motion.h1>
+                    {consejo && (
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 1.2, delay: 1 }}
+                            style={styles.consejo}
+                        >
+                            Consejo para <strong>{consejo.nombre}</strong>: {consejo.consejo}
+                        </motion.p>
+                    )}
                 </motion.div>
             )}
         </AnimatePresence>
@@ -65,6 +88,8 @@ const styles = {
         alignItems: 'center',
         color: '#00ffcc',
         fontFamily: 'Orbitron, sans-serif',
+        padding: '0 20px',
+        textAlign: 'center',
     },
     spinner: {
         width: '80px',
@@ -77,6 +102,13 @@ const styles = {
     text: {
         fontSize: '1.5rem',
         letterSpacing: '2px',
+    },
+    consejo: {
+        marginTop: '20px',
+        fontSize: '1rem',
+        maxWidth: '600px',
+        lineHeight: '1.4',
+        color: '#cccccc'
     }
 };
 
