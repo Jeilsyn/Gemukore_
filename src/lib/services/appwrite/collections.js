@@ -247,14 +247,36 @@ export async function getUserGamesPreferences(userId) {
 
 //EN cuanto a Match
 export async function getAllUsers(currentUserId) {
-  const response = await databases.listDocuments(
+  const allUsers = await databases.listDocuments(
     DATABASE_ID,
     USUARIOS_COLLECTION_ID,
     [Query.limit(100)]
   );
-  return response.documents.filter((user) => user.$id !== currentUserId);
-}
 
+  const likes = await databases.listDocuments(DATABASE_ID, LIKES_COLLECTION, [
+    Query.equal("emisor_id", currentUserId),
+  ]);
+
+  // No podemos hacer filtros en usuarios_ids si es relación, así que traemos todo
+  const matches = await databases.listDocuments(DATABASE_ID, MATCHES_COLLECTION, [
+    Query.limit(100) // Asume pocos matches, si no, hay que paginar
+  ]);
+
+  const matchedIds = matches.documents
+    .filter(match => match.usuarios_ids?.some(u => u.$id === currentUserId))
+    .flatMap(match => match.usuarios_ids.map(u => u.$id))
+    .filter(id => id !== currentUserId);
+
+  const rejectedIds = likes.documents
+    .filter((like) => like.estado === "rechazado_receptor")
+    .map((like) => like.receptor_id);
+
+  const excludedIds = new Set([...rejectedIds, ...matchedIds]);
+
+  return allUsers.documents.filter(
+    (user) => user.$id !== currentUserId && !excludedIds.has(user.$id)
+  );
+}
 // Create a new like
 // Actualiza la función createLike para aceptar el estado como parámetro
 export async function createLike(
@@ -277,12 +299,34 @@ export async function createLike(
 }
 
 export async function skipUser(emisorId, receptorId) {
-  return databases.createDocument(DATABASE_ID, LIKES_COLLECTION, ID.unique(), {
-    emisor_id: emisorId,
-    receptor_id: receptorId,
-    fecha_like: new Date().toISOString(),
-    estado: "rechazado_receptor",
-  });
+  try {
+    // 1. Buscar si ya hay un like de ese emisor al receptor
+    const existing = await databases.listDocuments(DATABASE_ID, LIKES_COLLECTION, [
+      Query.equal("emisor_id", emisorId),
+      Query.equal("receptor_id", receptorId),
+    ]);
+
+    if (existing.total > 0) {
+      const likeDoc = existing.documents[0];
+
+      // 2. Si ya existe, actualizar estado a "rechazado_receptor"
+      return databases.updateDocument(DATABASE_ID, LIKES_COLLECTION, likeDoc.$id, {
+        estado: "rechazado_receptor",
+        fecha_like: new Date().toISOString(),
+      });
+    }
+
+    // 3. Si no existe, crearlo
+    return databases.createDocument(DATABASE_ID, LIKES_COLLECTION, ID.unique(), {
+      emisor_id: emisorId,
+      receptor_id: receptorId,
+      fecha_like: new Date().toISOString(),
+      estado: "rechazado_receptor",
+    });
+  } catch (err) {
+    console.error("Error al hacer skip:", err);
+    throw err;
+  }
 }
 // Fetch pending likes for the current user (to accept or reject)
 export async function getPendingLikes(userId) {
@@ -318,7 +362,7 @@ async function generateTeamId(userA, userB) {
   const raw = new TextEncoder().encode([userA, userB].sort().join("_"));
   const hashBuffer = await crypto.subtle.digest("SHA-256", raw);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  const hex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
   return hex.slice(0, 36);
 }
 
@@ -329,26 +373,43 @@ async function ensureMatchTeam(userA, userB) {
   try {
     await teams.get(teamId); // Intenta obtener el equipo existente
   } catch (err) {
-    if (err.code === 404) { // Si el equipo no existe, crearlo
+    if (err.code === 404) {
+      // Si el equipo no existe, crearlo
       await teams.create(teamId, `Match_${teamId}`, []);
-      
+
       // Obtenemos los perfiles de ambos usuarios, donde se supone que debe estar el email
       const userAProfile = await getUserProfile(userA);
       const userBProfile = await getUserProfile(userB);
 
       // Aquí asumimos que los perfiles contienen un campo "email"
       if (!userAProfile.email || !userBProfile.email) {
-        throw new Error("Uno o ambos usuarios no tienen un correo electrónico válido.");
+        throw new Error(
+          "Uno o ambos usuarios no tienen un correo electrónico válido."
+        );
       }
       console.log("Email A:", userAProfile.email);
       console.log("Email B:", userBProfile.email);
-      
+
       // Usamos el email directamente del perfil para agregar a los miembros
-      await teams.createMembership(teamId, ID.unique(), ["member"], userAProfile.email, null, null, null);
-      await teams.createMembership(teamId, ID.unique(), ["member"], userBProfile.email, null, null, null);
-    } else {
-      throw err; // Si ocurrió otro error, lanzarlo
-    }
+      await teams.createMembership(
+        teamId,
+        ID.unique(),
+        ["member"],
+        userAProfile.email,
+        null,
+        null,
+        null
+      );
+      await teams.createMembership(
+        teamId,
+        ID.unique(),
+        ["member"],
+        userBProfile.email,
+        null,
+        null,
+        null
+      );
+    } 
   }
 
   return teamId;
@@ -359,6 +420,35 @@ export async function createMatch(userA, userB) {
 
   const teamId = await ensureMatchTeam(userA, userB);
 
+  const MATCH_COST = 100;
+
+  try {
+    // Obtener perfiles actuales
+    const [userAProfile, userBProfile] = await Promise.all([
+      getUserProfile(userA),
+      getUserProfile(userB),
+    ]);
+
+    // Restar thomcoins a userA
+    const thomcoinsA = (userAProfile.thomcoins || 0) - MATCH_COST;
+    if (thomcoinsA < 0) {
+      throw new Error(
+        "El usuario no tiene suficientes thomcoins para hacer match."
+      );
+    }
+
+    // userB no pierde thomcoins
+    const thomcoinsB = userBProfile.thomcoins || 0;
+
+    // Actualizar perfiles
+    await Promise.all([
+      updateUserProfile(userA, { thomcoins: thomcoinsA }),
+      updateUserProfile(userB, { thomcoins: thomcoinsB }), // Esto puede omitirse si no cambia
+    ]);
+  } catch (err) {
+    alert("⚠️ Error al actualizar thomcoins después del match:", err);
+    throw err; // Aquí sí lanzamos el error porque el match no debería ocurrir sin pagar
+  }
   return databases.createDocument(
     DATABASE_ID,
     MATCHES_COLLECTION,
@@ -371,8 +461,6 @@ export async function createMatch(userA, userB) {
     [Permission.read(Role.team(teamId)), Permission.update(Role.team(teamId))]
   );
 }
-
-
 
 export async function getUserGamesPreferencesWithNames(userId) {
   try {
