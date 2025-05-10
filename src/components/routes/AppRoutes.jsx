@@ -8,6 +8,9 @@ import SettingsPage from '../../pages/SettingsPage';
 import LoadingPage from '../../pages/loadingPage'
 import Matches from '../../pages/Match'; // Nuevo import
 import Requests from '../../pages/MatchRequests'; // Nuevo import
+import GameBoard from '../../pages/GameBoard';
+import CreateGameInfoUser from '../../pages/CreateGameInfoUser';
+
 //Todas las rutas están aqui
 function AppRoutes() {
 
@@ -19,10 +22,11 @@ function AppRoutes() {
             <Route path="/crearPerfil" element={<CreatePerfil />} />
             <Route path="/CrearPrefJuegos" element={<CreatePrefGame />} />
             <Route path='/LoadingPage' element={<LoadingPage />} />
-            <Route path='/settings' element={<SettingsPage />} /> 
-             <Route path="/match" element={<Matches />} /> 
+            <Route path='/settings' element={<SettingsPage />} />
+            <Route path="/match" element={<Matches />} />
             <Route path="/requests" element={<Requests />} />
-
+            <Route path="/gameBoard" element={<GameBoard />} />
+            <Route path="/createGameInfoUser" element={<CreateGameInfoUser />} />
         </Routes>
     )
 

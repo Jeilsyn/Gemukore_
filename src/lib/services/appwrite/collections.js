@@ -14,7 +14,7 @@ const USUARIOS_JUEGOS_COLLECTION_ID = "680e29eb00099919fc72";
 const VIDEOJUEGOS_COLLECTION_ID = "680e2a4c003066987223";
 const MATCHES_COLLECTION = "68188f96001e495758a2";
 const LIKES_COLLECTION = "681894a3001f3d2e9a0e";
-
+const USUARIO_GAME_INFO_COLLECTION_ID = "681f603e00343d636ac5";
 /* // Ejecuta esta función una sola vez
 export async function corregirURLsPreview() {
   try {
@@ -361,60 +361,45 @@ export async function updateLike(likeId, data) {
 async function generateTeamId(userA, userB) {
   const raw = new TextEncoder().encode([userA, userB].sort().join("_"));
   const hashBuffer = await crypto.subtle.digest("SHA-256", raw);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-  return hex.slice(0, 36);
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 36);
 }
-
 // Asegura que exista un equipo y que ambos usuarios estén dentro
 async function ensureMatchTeam(userA, userB) {
   const teamId = await generateTeamId(userA, userB);
 
   try {
-    await teams.get(teamId); // Intenta obtener el equipo existente
+    await teams.get(teamId);
   } catch (err) {
     if (err.code === 404) {
-      // Si el equipo no existe, crearlo
+      // Crear equipo sin depender de emails
       await teams.create(teamId, `Match_${teamId}`, []);
-
-      // Obtenemos los perfiles de ambos usuarios, donde se supone que debe estar el email
-      const userAProfile = await getUserProfile(userA);
-      const userBProfile = await getUserProfile(userB);
-
-      // Aquí asumimos que los perfiles contienen un campo "email"
-      if (!userAProfile.email || !userBProfile.email) {
-        throw new Error(
-          "Uno o ambos usuarios no tienen un correo electrónico válido."
-        );
-      }
-      console.log("Email A:", userAProfile.email);
-      console.log("Email B:", userBProfile.email);
-
-      // Usamos el email directamente del perfil para agregar a los miembros
+      
+      // Usar user IDs directamente para las membresías
       await teams.createMembership(
         teamId,
         ID.unique(),
         ["member"],
-        userAProfile.email,
-        null,
-        null,
-        null
+        undefined, // email no requerido
+        undefined, // phone no requerido
+        undefined, // name no requerido
+        `user:${userA}` // user ID
       );
       await teams.createMembership(
         teamId,
         ID.unique(),
         ["member"],
-        userBProfile.email,
-        null,
-        null,
-        null
+        undefined,
+        undefined,
+        undefined,
+        `user:${userB}`
       );
-    } 
+    } else {
+      throw err;
+    }
   }
 
   return teamId;
-}
-// Crea un nuevo match con permisos para los usuarios involucrados
+}/* // Crea un nuevo match con permisos para los usuarios involucrados
 export async function createMatch(userA, userB) {
   if (!userA || !userB) throw new Error("IDs de usuarios inválidos");
 
@@ -445,6 +430,7 @@ export async function createMatch(userA, userB) {
       updateUserProfile(userA, { thomcoins: thomcoinsA }),
       updateUserProfile(userB, { thomcoins: thomcoinsB }), // Esto puede omitirse si no cambia
     ]);
+
   } catch (err) {
     alert("⚠️ Error al actualizar thomcoins después del match:", err);
     throw err; // Aquí sí lanzamos el error porque el match no debería ocurrir sin pagar
@@ -459,8 +445,69 @@ export async function createMatch(userA, userB) {
       estado: "activo",
     },
     [Permission.read(Role.team(teamId)), Permission.update(Role.team(teamId))]
+
   );
 }
+
+
+ */
+
+
+//***********************************************************************************************************************************+ */
+
+// Corrige la función createMatch
+export async function createMatch(userA, userB) {
+  if (!userA || !userB) throw new Error("IDs de usuarios inválidos");
+
+  const teamId = await ensureMatchTeam(userA, userB);
+
+  const MATCH_COST = 100;
+
+  try {
+    // Obtener perfiles actuales
+    const [userAProfile, userBProfile] = await Promise.all([
+      getUserProfile(userA),
+      getUserProfile(userB),
+    ]);
+
+    // Restar thomcoins a userA
+    const thomcoinsA = (userAProfile.thomcoins || 0) - MATCH_COST;
+    if (thomcoinsA < 0) {
+      throw new Error(
+        "El usuario no tiene suficientes thomcoins para hacer match."
+      );
+    }
+
+    // Actualizar perfiles
+    await Promise.all([
+      updateUserProfile(userA, { thomcoins: thomcoinsA }),
+      updateUserProfile(userB, { thomcoins: userBProfile.thomcoins || 0 }),
+    ]);
+
+    // 1. Primero crear el match
+    const match = await databases.createDocument(
+      DATABASE_ID,
+      MATCHES_COLLECTION,
+      ID.unique(),
+      {
+        usuarios_ids: [userA, userB],
+        fecha_match: new Date().toISOString(),
+        estado: "activo",
+      },
+      [Permission.read(Role.team(teamId)), Permission.update(Role.team(teamId))]
+    );
+
+
+    return match;
+  } catch (err) {
+    console.error("Error en createMatch:", err);
+    throw err;
+  }
+}
+
+// Función createChatForMatch corregida
+//********************************************************************************************************************************* */
+
 
 export async function getUserGamesPreferencesWithNames(userId) {
   try {
@@ -479,6 +526,175 @@ export async function getUserGamesPreferencesWithNames(userId) {
     }));
   } catch (err) {
     console.error("Error combinando preferencias con nombres de juegos:", err);
+    throw err;
+  }
+}
+
+//Tarjeta Pokemon 
+
+
+
+// Crear información de juego del usuario
+export async function createUserGameInfo(userId, gameId, data) {
+  try {
+    return await databases.createDocument(
+      DATABASE_ID,
+      USUARIO_GAME_INFO_COLLECTION_ID,
+      ID.unique(),
+      {
+        usuario_id: userId,
+        juego_id: gameId,
+        nickname_en_juego: data.nickname,
+        rol: data.rol || null
+      }
+    );
+  } catch (err) {
+    console.error("Error creating game info:", err);
+    throw err;
+  }
+}
+
+// Obtener información de juego de un usuario
+export async function getUserGameInfo(userId) {
+  try {
+    const response = await databases.listDocuments(
+      DATABASE_ID,
+      USUARIO_GAME_INFO_COLLECTION_ID,
+      [Query.equal("usuario_id", userId)]
+    );
+    return response.documents;
+  } catch (err) {
+    console.error("Error getting game info:", err);
+    throw err;
+  }
+}
+
+// Obtener información combinada para los matches
+export async function getMatchesWithGameInfo(userId) {
+  try {
+    // 1. Obtener matches del usuario
+    const matches = await databases.listDocuments(
+      DATABASE_ID,
+      MATCHES_COLLECTION,
+      [Query.equal("usuarios_ids", userId)]
+    );
+
+    // 2. Para cada match, obtener info del otro usuario y sus juegos
+    const matchesWithInfo = await Promise.all(
+      matches.documents.map(async match => {
+        const otherUserId = match.usuarios_ids.find(id => id !== userId);
+        const userProfile = await getUserProfile(otherUserId);
+        const userGames = await getUserGamesPreferences(otherUserId);
+        const userGameInfo = await getUserGameInfo(otherUserId);
+
+        // Combinar la información
+        const gamesWithDetails = userGames.map(game => {
+          const info = userGameInfo.find(i => i.juego_id === game.videojuego_id.$id);
+          const gameData = {
+            ...game,
+            nickname_en_juego: info?.nickname_en_juego || "Sin nickname",
+            rol: info?.rol || "No especificado"
+          };
+          return gameData;
+        });
+
+        return {
+          matchId: match.$id,
+          user: {
+            id: otherUserId,
+            name: userProfile.nombre_usuario,
+            photo: userProfile.foto_perfil_url,
+            description: userProfile.descripcion
+          },
+          games: gamesWithDetails
+        };
+      })
+    );
+
+    return matchesWithInfo;
+  } catch (err) {
+    console.error("Error getting matches with info:", err);
+    throw err;
+  }
+}
+
+export async function upsertUserGameInfo(userId, gameId, data) {
+  try {
+    // Primero verificar si ya existe un registro para este usuario y juego
+    const existing = await databases.listDocuments(
+      DATABASE_ID,
+      USUARIO_GAME_INFO_COLLECTION_ID,
+      [
+        Query.equal("usuario_id", userId),
+        Query.equal("juego_id", gameId),
+        Query.limit(1)
+      ]
+    );
+
+    if (existing.documents.length > 0) {
+      // Actualizar documento existente
+      return await databases.updateDocument(
+        DATABASE_ID,
+        USUARIO_GAME_INFO_COLLECTION_ID,
+        existing.documents[0].$id,
+        {
+          nickname_en_juego: data.nickname,
+          rol: data.rol || null
+        }
+      );
+    } else {
+      // Crear nuevo documento
+      return await databases.createDocument(
+        DATABASE_ID,
+        USUARIO_GAME_INFO_COLLECTION_ID,
+        ID.unique(),
+        {
+          usuario_id: userId,
+          juego_id: gameId,
+          nickname_en_juego: data.nickname,
+          rol: data.rol || null
+        }
+      );
+    }
+  } catch (err) {
+    console.error("Error en upsertUserGameInfo:", err);
+    throw err;
+  }
+}
+
+/**
+ * Obtiene la información de juego para un usuario específico
+ */
+export async function getUserGameInfoByGame(userId, gameId) {
+  try {
+    const response = await databases.listDocuments(
+      DATABASE_ID,
+      USUARIO_GAME_INFO_COLLECTION_ID,
+      [
+        Query.equal("usuario_id", userId),
+        Query.equal("juego_id", gameId),
+        Query.limit(1)
+      ]
+    );
+    return response.documents[0] || null;
+  } catch (err) {
+    console.error("Error en getUserGameInfoByGame:", err);
+    throw err;
+  }
+}
+
+/**
+ * Elimina la información de juego de un usuario
+ */
+export async function deleteUserGameInfo(documentId) {
+  try {
+    return await databases.deleteDocument(
+      DATABASE_ID,
+      USUARIO_GAME_INFO_COLLECTION_ID,
+      documentId
+    );
+  } catch (err) {
+    console.error("Error en deleteUserGameInfo:", err);
     throw err;
   }
 }

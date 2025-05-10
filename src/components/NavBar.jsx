@@ -15,8 +15,8 @@ const NavBar = () => {
       if (current) {
         try {
           const data = await getUserProfile(current.$id);
-          console.log("Perfil cargado:", data);
-          setProfile(data);
+/*           console.log("Perfil cargado:", data);
+ */          setProfile(data);
 
           // SDK de Appwrite: generar URL segura
           const client = new Client()
@@ -55,6 +55,7 @@ const NavBar = () => {
             <li><Link to="/settings">Configuración</Link></li>
             <li><Link to="/match">Match</Link></li>
             <li><Link to="/requests">Requests</Link></li>
+            <li><Link to="/gameBoard">Lista</Link></li>
             <li className="nav-info">
               🪙 {profile.thomcoins} Thomcoins
             </li>

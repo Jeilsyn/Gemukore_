@@ -25,16 +25,16 @@ const LoadingPage = () => {
         const timer = setTimeout(() => {
             setIsVisible(false);
             setTimeout(() => {
-              localStorage.removeItem('alreadyReloaded');
-          
-              // Redirige según el origen
-              if (location.state?.from === 'crearPerfil') {
-                navigate('/CrearPrefJuegos');
-              } else {
-                navigate('/Settings');
-              }
+                localStorage.removeItem('alreadyReloaded');
+
+                // Redirige según el origen
+                if (location.state?.from === 'crearPerfil') {
+                    navigate('/CrearPrefJuegos');
+                } else{
+                    navigate('/createGameInfoUser');
+                }
             }, 3000);
-          }, 3000);
+        }, 3000);
 
         return () => clearTimeout(timer);
     }, [navigate]);

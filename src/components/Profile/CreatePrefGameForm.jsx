@@ -108,7 +108,8 @@ function CreatePrefGameForm({ userId }) {
       setSelectedGame(null);
       setNivelJuego('');
       setFavorito(false);
-      navigate("/match")
+/*       navigate("/match")
+ */      navigate("/loadingPage")
     } catch (err) {
       console.error('Error al guardar:', err);
       alert(`❌ Error al guardar preferencia: ${err.message}`);
