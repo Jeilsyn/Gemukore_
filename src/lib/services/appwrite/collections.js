@@ -15,6 +15,9 @@ const VIDEOJUEGOS_COLLECTION_ID = "680e2a4c003066987223";
 const MATCHES_COLLECTION = "68188f96001e495758a2";
 const LIKES_COLLECTION = "681894a3001f3d2e9a0e";
 const USUARIO_GAME_INFO_COLLECTION_ID = "681f603e00343d636ac5";
+const TUTORIALES_COLLECTION_ID = "682203a70001320efb74";
+
+
 /* // Ejecuta esta función una sola vez
 export async function corregirURLsPreview() {
   try {
@@ -245,6 +248,7 @@ export async function getUserGamesPreferences(userId) {
 }
  */
 
+
 //EN cuanto a Match
 export async function getAllUsers(currentUserId) {
   const allUsers = await databases.listDocuments(
@@ -257,15 +261,19 @@ export async function getAllUsers(currentUserId) {
     Query.equal("emisor_id", currentUserId),
   ]);
 
-  // No podemos hacer filtros en usuarios_ids si es relación, así que traemos todo
-  const matches = await databases.listDocuments(DATABASE_ID, MATCHES_COLLECTION, [
-    Query.limit(100) // Asume pocos matches, si no, hay que paginar
-  ]);
+  // No podemos hacer filtros en usuarioss_ids si es relación, así que traemos todo
+  const matches = await databases.listDocuments(
+    DATABASE_ID,
+    MATCHES_COLLECTION,
+    [
+      Query.limit(100), // Asume pocos matches, si no, hay que paginar
+    ]
+  );
 
   const matchedIds = matches.documents
-    .filter(match => match.usuarios_ids?.some(u => u.$id === currentUserId))
-    .flatMap(match => match.usuarios_ids.map(u => u.$id))
-    .filter(id => id !== currentUserId);
+    .filter((match) => match.usuarioss_ids?.some((u) => u.$id === currentUserId))
+    .flatMap((match) => match.usuarioss_ids.map((u) => u.$id))
+    .filter((id) => id !== currentUserId);
 
   const rejectedIds = likes.documents
     .filter((like) => like.estado === "rechazado_receptor")
@@ -301,28 +309,42 @@ export async function createLike(
 export async function skipUser(emisorId, receptorId) {
   try {
     // 1. Buscar si ya hay un like de ese emisor al receptor
-    const existing = await databases.listDocuments(DATABASE_ID, LIKES_COLLECTION, [
-      Query.equal("emisor_id", emisorId),
-      Query.equal("receptor_id", receptorId),
-    ]);
+    const existing = await databases.listDocuments(
+      DATABASE_ID,
+      LIKES_COLLECTION,
+      [
+        Query.equal("emisor_id", emisorId),
+        Query.equal("receptor_id", receptorId),
+      ]
+    );
 
     if (existing.total > 0) {
       const likeDoc = existing.documents[0];
 
       // 2. Si ya existe, actualizar estado a "rechazado_receptor"
-      return databases.updateDocument(DATABASE_ID, LIKES_COLLECTION, likeDoc.$id, {
-        estado: "rechazado_receptor",
-        fecha_like: new Date().toISOString(),
-      });
+      return databases.updateDocument(
+        DATABASE_ID,
+        LIKES_COLLECTION,
+        likeDoc.$id,
+        {
+          estado: "rechazado_receptor",
+          fecha_like: new Date().toISOString(),
+        }
+      );
     }
 
     // 3. Si no existe, crearlo
-    return databases.createDocument(DATABASE_ID, LIKES_COLLECTION, ID.unique(), {
-      emisor_id: emisorId,
-      receptor_id: receptorId,
-      fecha_like: new Date().toISOString(),
-      estado: "rechazado_receptor",
-    });
+    return databases.createDocument(
+      DATABASE_ID,
+      LIKES_COLLECTION,
+      ID.unique(),
+      {
+        emisor_id: emisorId,
+        receptor_id: receptorId,
+        fecha_like: new Date().toISOString(),
+        estado: "rechazado_receptor",
+      }
+    );
   } catch (err) {
     console.error("Error al hacer skip:", err);
     throw err;
@@ -361,7 +383,10 @@ export async function updateLike(likeId, data) {
 async function generateTeamId(userA, userB) {
   const raw = new TextEncoder().encode([userA, userB].sort().join("_"));
   const hashBuffer = await crypto.subtle.digest("SHA-256", raw);
-  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 36);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+    .slice(0, 36);
 }
 // Asegura que exista un equipo y que ambos usuarios estén dentro
 async function ensureMatchTeam(userA, userB) {
@@ -373,7 +398,7 @@ async function ensureMatchTeam(userA, userB) {
     if (err.code === 404) {
       // Crear equipo sin depender de emails
       await teams.create(teamId, `Match_${teamId}`, []);
-      
+
       // Usar user IDs directamente para las membresías
       await teams.createMembership(
         teamId,
@@ -399,7 +424,7 @@ async function ensureMatchTeam(userA, userB) {
   }
 
   return teamId;
-}/* // Crea un nuevo match con permisos para los usuarios involucrados
+} /* // Crea un nuevo match con permisos para los usuarios involucrados
 export async function createMatch(userA, userB) {
   if (!userA || !userB) throw new Error("IDs de usuarios inválidos");
 
@@ -440,7 +465,7 @@ export async function createMatch(userA, userB) {
     MATCHES_COLLECTION,
     ID.unique(),
     {
-      usuarios_ids: [userA, userB],
+      usuarioss_ids: [userA, userB],
       fecha_match: new Date().toISOString(),
       estado: "activo",
     },
@@ -451,7 +476,6 @@ export async function createMatch(userA, userB) {
 
 
  */
-
 
 //***********************************************************************************************************************************+ */
 
@@ -490,13 +514,12 @@ export async function createMatch(userA, userB) {
       MATCHES_COLLECTION,
       ID.unique(),
       {
-        usuarios_ids: [userA, userB],
+        usuarioss_ids: [userA, userB],
         fecha_match: new Date().toISOString(),
         estado: "activo",
       },
       [Permission.read(Role.team(teamId)), Permission.update(Role.team(teamId))]
     );
-
 
     return match;
   } catch (err) {
@@ -507,7 +530,6 @@ export async function createMatch(userA, userB) {
 
 // Función createChatForMatch corregida
 //********************************************************************************************************************************* */
-
 
 export async function getUserGamesPreferencesWithNames(userId) {
   try {
@@ -530,11 +552,263 @@ export async function getUserGamesPreferencesWithNames(userId) {
   }
 }
 
-//Tarjeta Pokemon 
+//Tarjeta Pokemon
+export async function getMatchesWithGameInfo(userId) {
+  console.log("🚀 Starting getMatchesWithGameInfo for user:", userId);
+
+  try {
+    // 1. Obtener todos los matches del usuario
+    const matchesResponse = await databases.listDocuments(
+      DATABASE_ID,
+      MATCHES_COLLECTION,
+      [Query.limit(100)]
+    );
+
+    // 2. Filtrar matches que incluyen al usuario actual
+    const userMatches = matchesResponse.documents.filter((match) => {
+      const userIds = (match.usuarioss_ids || []).map(u => 
+        typeof u === 'string' ? u : u?.$id
+      ).filter(Boolean);
+      return userIds.includes(userId);
+    });
+
+    console.log("📌 User matches found:", userMatches.length);
+
+    if (!userMatches.length) return [];
+
+    // 3. Procesar cada match
+    const enrichedMatches = await Promise.all(
+      userMatches.map(async (match) => {
+        try {
+          // 4. Encontrar el otro usuario en el match
+          const otherUserId = (match.usuarioss_ids || [])
+            .map(u => typeof u === 'string' ? u : u?.$id)
+            .find(id => id && id !== userId);
+
+          if (!otherUserId) {
+            console.warn("⚠️ No other user found in match:", match.$id);
+            return null;
+          }
+
+          console.log("👤 Processing other user:", otherUserId);
+
+          // 5. Obtener perfil del otro usuario
+          const otherUser = await databases.getDocument(
+            DATABASE_ID,
+            USUARIOS_COLLECTION_ID,
+            otherUserId
+          );
+
+          // 6. Obtener TODA la información relevante de una sola vez
+          const [gamesPrefs, gameInfos] = await Promise.all([
+            databases.listDocuments(
+              DATABASE_ID,
+              USUARIOS_JUEGOS_COLLECTION_ID,
+              [Query.equal("usuario_id", otherUserId)]
+            ),
+            databases.listDocuments(
+              DATABASE_ID,
+              USUARIO_GAME_INFO_COLLECTION_ID,
+              [Query.equal("usuario_id", otherUserId)]
+            )
+          ]);
+
+          console.log("🎮 Games prefs:", gamesPrefs.documents.length);
+          console.log("🆔 Game infos:", gameInfos.documents.length);
+
+          // 7. Crear mapa de información de juegos
+          const gameInfoMap = {};
+          gameInfos.documents.forEach(info => {
+            // Verificar si el juego_id es string o objeto
+            const gameId = typeof info.juego_id === 'string' 
+              ? info.juego_id 
+              : info.juego_id?.$id;
+            
+            if (gameId) {
+              gameInfoMap[gameId] = info;
+            }
+          });
+
+          // 8. Procesar cada juego con su información
+          const gamesWithInfo = await Promise.all(
+            gamesPrefs.documents.map(async (pref) => {
+              try {
+                // Obtener ID del juego (maneja ambos formatos)
+                const gameId = typeof pref.videojuego_id === 'string' 
+                  ? pref.videojuego_id 
+                  : pref.videojuego_id?.$id;
+
+                if (!gameId) {
+                  console.warn("❌ Invalid game ID in pref:", pref);
+                  return null;
+                }
+
+                // Obtener detalles del juego
+                const gameDetails = await databases.getDocument(
+                  DATABASE_ID,
+                  VIDEOJUEGOS_COLLECTION_ID,
+                  gameId
+                ).catch(() => null);
 
 
 
-// Crear información de juego del usuario
+    // Fix image URL if needed
+          if (
+            otherUser.foto_perfil_url &&
+            otherUser.foto_perfil_url.includes("/preview")
+          ) {
+            const fileId = otherUser.foto_perfil_url
+              .split("/files/")[1]
+              ?.split("/")[0];
+            otherUser.foto_perfil_url = `https://fra.cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${fileId}/view?project=680e27de001ffc71f5a7`;
+          }
+
+                // Obtener información adicional del juego
+                const gameInfo = gameInfoMap[gameId];
+
+                console.log(`🔄 Processing game ${gameId}:`, {
+                  hasInfo: !!gameInfo,
+                  gameName: gameDetails?.nombre
+                });
+
+                return {
+                  $id: pref.$id,
+                  videojuego_id: gameId,
+                  nombre: gameDetails?.nombre || "Juego desconocido",
+                  nivel_juego: pref.nivel_juego,
+                  favorito: pref.favorito,
+                  nickname_en_juego: gameInfo?.nickname_en_juego || null,
+                  rol: gameInfo?.rol || null
+                };
+              } catch (error) {
+                console.error("🔥 Error processing game pref:", error);
+                return null;
+              }
+            })
+          );
+
+          return {
+            $id: match.$id,
+            user: {
+              id: otherUser.$id,
+              name: otherUser.nombre_usuario,
+              photo: otherUser.foto_perfil_url || "/default-user.png",
+              description: otherUser.descripcion,
+            },
+            games: gamesWithInfo.filter(Boolean),
+          };
+        } catch (error) {
+          console.error("❌ Error processing match:", error);
+          return null;
+        }
+      })
+    );
+
+    const validMatches = enrichedMatches.filter(Boolean);
+    console.log("✅ Valid matches found:", validMatches.length);
+    return validMatches;
+  } catch (error) {
+    console.error("🔥 Error in getMatchesWithGameInfo:", error);
+    throw error;
+  }
+}
+
+
+export async function debugUserGameInfo(userId) {
+  console.log("🔍 Starting debug for user:", userId);
+  
+  try {
+    // 1. Obtener todos los juegos del usuario
+    const userGames = await databases.listDocuments(
+      DATABASE_ID,
+      USUARIOS_JUEGOS_COLLECTION_ID,
+      [Query.equal("usuario_id", userId)]
+    );
+    
+    console.log("🎮 User games found:", userGames.documents.length);
+    
+    // 2. Obtener toda la información de juegos del usuario
+    const gameInfos = await databases.listDocuments(
+      DATABASE_ID,
+      USUARIO_GAME_INFO_COLLECTION_ID,
+      [Query.equal("usuario_id", userId)]
+    );
+    
+    console.log("🆔 Game info entries found:", gameInfos.documents.length);
+    
+    // 3. Verificar cada juego
+    const results = await Promise.all(
+      userGames.documents.map(async (gamePref) => {
+        const gameId = typeof gamePref.videojuego_id === 'string' 
+          ? gamePref.videojuego_id 
+          : gamePref.videojuego_id?.$id;
+        
+        if (!gameId) {
+          return {
+            gamePref,
+            status: "INVALID_ID",
+            gameInfo: null
+          };
+        }
+        
+        // Buscar información del juego
+        const gameInfo = gameInfos.documents.find(info => info.juego_id === gameId);
+        
+        // Verificar si el juego existe
+        let gameExists;
+        try {
+          await databases.getDocument(
+            DATABASE_ID,
+            VIDEOJUEGOS_COLLECTION_ID,
+            gameId
+          );
+          gameExists = true;
+        } catch {
+          gameExists = false;
+        }
+        
+        return {
+          gamePref,
+          gameId,
+          gameExists,
+          gameInfo,
+          status: gameInfo ? "FOUND" : "NOT_FOUND"
+        };
+      })
+    );
+    
+    console.log("📊 Debug results:", results);
+    
+    // 4. Mostrar resumen
+    const summary = {
+      totalGames: results.length,
+      gamesWithInfo: results.filter(r => r.status === "FOUND").length,
+      gamesWithoutInfo: results.filter(r => r.status === "NOT_FOUND").length,
+      invalidIds: results.filter(r => r.status === "INVALID_ID").length,
+      nonExistentGames: results.filter(r => !r.gameExists).length
+    };
+    
+    console.log("📝 Summary:", summary);
+    
+    return {
+      results,
+      summary
+    };
+    
+  } catch (error) {
+    console.error("🔥 Debug error:", error);
+    throw error;
+  }
+}
+
+
+
+
+
+
+
+
+// Funciones adicionales para manejar la información de juegos
 export async function createUserGameInfo(userId, gameId, data) {
   try {
     return await databases.createDocument(
@@ -545,7 +819,7 @@ export async function createUserGameInfo(userId, gameId, data) {
         usuario_id: userId,
         juego_id: gameId,
         nickname_en_juego: data.nickname,
-        rol: data.rol || null
+        rol: data.rol || null,
       }
     );
   } catch (err) {
@@ -554,7 +828,6 @@ export async function createUserGameInfo(userId, gameId, data) {
   }
 }
 
-// Obtener información de juego de un usuario
 export async function getUserGameInfo(userId) {
   try {
     const response = await databases.listDocuments(
@@ -569,81 +842,29 @@ export async function getUserGameInfo(userId) {
   }
 }
 
-// Obtener información combinada para los matches
-export async function getMatchesWithGameInfo(userId) {
-  try {
-    // 1. Obtener matches del usuario
-    const matches = await databases.listDocuments(
-      DATABASE_ID,
-      MATCHES_COLLECTION,
-      [Query.equal("usuarios_ids", userId)]
-    );
-
-    // 2. Para cada match, obtener info del otro usuario y sus juegos
-    const matchesWithInfo = await Promise.all(
-      matches.documents.map(async match => {
-        const otherUserId = match.usuarios_ids.find(id => id !== userId);
-        const userProfile = await getUserProfile(otherUserId);
-        const userGames = await getUserGamesPreferences(otherUserId);
-        const userGameInfo = await getUserGameInfo(otherUserId);
-
-        // Combinar la información
-        const gamesWithDetails = userGames.map(game => {
-          const info = userGameInfo.find(i => i.juego_id === game.videojuego_id.$id);
-          const gameData = {
-            ...game,
-            nickname_en_juego: info?.nickname_en_juego || "Sin nickname",
-            rol: info?.rol || "No especificado"
-          };
-          return gameData;
-        });
-
-        return {
-          matchId: match.$id,
-          user: {
-            id: otherUserId,
-            name: userProfile.nombre_usuario,
-            photo: userProfile.foto_perfil_url,
-            description: userProfile.descripcion
-          },
-          games: gamesWithDetails
-        };
-      })
-    );
-
-    return matchesWithInfo;
-  } catch (err) {
-    console.error("Error getting matches with info:", err);
-    throw err;
-  }
-}
-
 export async function upsertUserGameInfo(userId, gameId, data) {
   try {
-    // Primero verificar si ya existe un registro para este usuario y juego
     const existing = await databases.listDocuments(
       DATABASE_ID,
       USUARIO_GAME_INFO_COLLECTION_ID,
       [
         Query.equal("usuario_id", userId),
         Query.equal("juego_id", gameId),
-        Query.limit(1)
+        Query.limit(1),
       ]
     );
 
     if (existing.documents.length > 0) {
-      // Actualizar documento existente
       return await databases.updateDocument(
         DATABASE_ID,
         USUARIO_GAME_INFO_COLLECTION_ID,
         existing.documents[0].$id,
         {
           nickname_en_juego: data.nickname,
-          rol: data.rol || null
+          rol: data.rol || null,
         }
       );
     } else {
-      // Crear nuevo documento
       return await databases.createDocument(
         DATABASE_ID,
         USUARIO_GAME_INFO_COLLECTION_ID,
@@ -652,7 +873,7 @@ export async function upsertUserGameInfo(userId, gameId, data) {
           usuario_id: userId,
           juego_id: gameId,
           nickname_en_juego: data.nickname,
-          rol: data.rol || null
+          rol: data.rol || null,
         }
       );
     }
@@ -662,9 +883,6 @@ export async function upsertUserGameInfo(userId, gameId, data) {
   }
 }
 
-/**
- * Obtiene la información de juego para un usuario específico
- */
 export async function getUserGameInfoByGame(userId, gameId) {
   try {
     const response = await databases.listDocuments(
@@ -673,7 +891,7 @@ export async function getUserGameInfoByGame(userId, gameId) {
       [
         Query.equal("usuario_id", userId),
         Query.equal("juego_id", gameId),
-        Query.limit(1)
+        Query.limit(1),
       ]
     );
     return response.documents[0] || null;
@@ -683,9 +901,6 @@ export async function getUserGameInfoByGame(userId, gameId) {
   }
 }
 
-/**
- * Elimina la información de juego de un usuario
- */
 export async function deleteUserGameInfo(documentId) {
   try {
     return await databases.deleteDocument(
@@ -696,5 +911,293 @@ export async function deleteUserGameInfo(documentId) {
   } catch (err) {
     console.error("Error en deleteUserGameInfo:", err);
     throw err;
+  }
+}
+
+
+//Tutoriales 
+export async function getAllTutorials() {
+  try {
+    const response = await databases.listDocuments(
+      DATABASE_ID,
+      TUTORIALES_COLLECTION_ID,
+      [Query.limit(100)]
+    );
+    return response.documents;
+  } catch (err) {
+    console.error("Error fetching all tutorials:", err);
+    throw err;
+  }
+}
+
+export async function getTutorialsByFilters(videojuegoId = null, nivel = null) {
+  try {
+    let queries = [];
+    
+    if (videojuegoId) {
+      queries.push(Query.equal('videojuego_id', videojuegoId));
+    }
+    
+    if (nivel) {
+      queries.push(Query.equal('nivel_recomendado', nivel));
+    }
+
+    const response = await databases.listDocuments(
+      DATABASE_ID,
+      TUTORIALES_COLLECTION_ID,
+      queries
+    );
+
+    return response.documents;
+  } catch (err) {
+    console.error("Error fetching filtered tutorials:", err);
+    throw err;
+  }
+}
+
+export async function getTutorialById(tutorialId) {
+  try {
+    const response = await databases.getDocument(
+      DATABASE_ID,
+      TUTORIALES_COLLECTION_ID,
+      tutorialId
+    );
+    return response;
+  } catch (err) {
+    console.error("Error fetching tutorial by ID:", err);
+    throw err;
+  }
+}
+
+export async function createTutorial(tutorialData) {
+  try {
+    const response = await databases.createDocument(
+      DATABASE_ID,
+      TUTORIALES_COLLECTION_ID,
+      ID.unique(),
+      tutorialData
+    );
+    return response;
+  } catch (err) {
+    console.error("Error creating tutorial:", err);
+    throw err;
+  }
+}
+
+export async function updateTutorial(tutorialId, tutorialData) {
+  try {
+    const response = await databases.updateDocument(
+      DATABASE_ID,
+      TUTORIALES_COLLECTION_ID,
+      tutorialId,
+      tutorialData
+    );
+    return response;
+  } catch (err) {
+    console.error("Error updating tutorial:", err);
+    throw err;
+  }
+}
+
+export async function deleteTutorial(tutorialId) {
+  try {
+    const response = await databases.deleteDocument(
+      DATABASE_ID,
+      TUTORIALES_COLLECTION_ID,
+      tutorialId
+    );
+    return response;
+  } catch (err) {
+    console.error("Error deleting tutorial:", err);
+    throw err;
+  }
+}
+
+
+
+export const deleteUserGamePreference = async (userGameId) => {
+  try {
+    await databases.deleteDocument(
+      DATABASE_ID,
+      USUARIOS_JUEGOS_COLLECTION_ID,
+      userGameId
+    );
+  } catch (err) {
+    console.error("Error eliminando preferencia de juego:", err);
+    throw err;
+  }
+};
+
+////////////////////////////////////////////
+export const updateUserStatus = async (userId, block) => {
+  const response = await fetch('http://localhost:3002/bloquear', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId, block })
+  });
+
+  const data = await response.json();
+
+  if (!data.success) {
+    throw new Error(
+      `Estado no cambiado (actual: ${data.actualStatus})`
+    );
+  }
+
+  return data;
+};
+export const deleteUserFromAuth = async (userId) => {
+  try {
+    const response = await fetch('http://localhost:3002/eliminar-usuario', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId }),
+      // credentials: 'include' // ¡Comenta esto si no usas cookies!
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `Error ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.error('Error en deleteUserFromAuth:', err);
+    throw new Error(err.message || 'Error de conexión');
+  }
+};
+export async function getTutorialStats() {
+  try {
+    // Primero obtenemos los tutoriales sin incluir los videojuegos
+    const response = await databases.listDocuments(
+      DATABASE_ID,
+      TUTORIALES_COLLECTION_ID,
+      [
+        Query.select(['$id', 'titulo', 'nivel_recomendado', 'vistas', 'videojuego_id']),
+        Query.orderDesc("vistas"),
+        Query.limit(10)
+      ]
+    );
+
+    // Obtenemos todos los IDs de videojuegos únicos
+    const gameIds = [...new Set(response.documents.map(t => t.videojuego_id))];
+    
+    // Obtenemos los nombres de los videojuegos
+    const gamesResponse = await databases.listDocuments(
+      DATABASE_ID,
+      VIDEOJUEGOS_COLLECTION_ID,
+      [
+        Query.select(['$id', 'nombre']),
+        Query.equal('$id', gameIds)
+      ]
+    );
+
+    // Creamos un mapa de IDs a nombres
+    const gamesMap = gamesResponse.documents.reduce((map, game) => {
+      map[game.$id] = game.nombre;
+      return map;
+    }, {});
+
+    // Combinamos los datos
+    const tutorialsWithNames = response.documents.map(tutorial => ({
+      ...tutorial,
+      gameName: gamesMap[tutorial.videojuego_id] || 'N/A'
+    }));
+
+    return {
+      tutorialesPopulares: tutorialsWithNames,
+      totalTutoriales: response.total
+    };
+  } catch (err) {
+    console.error("Error obteniendo estadísticas de tutoriales:", err);
+    throw err;
+  }
+}
+
+
+
+/* * Incrementa el contador de vistas de un tutorial
+ */
+export async function incrementTutorialViews(tutorialId) {
+  try {
+    await databases.updateDocument(
+      DATABASE_ID,
+      TUTORIALES_COLLECTION_ID,
+      tutorialId,
+      { vistas: Query.increment(1) }
+    );
+  } catch (err) {
+    console.error("Error incrementando vistas:", err);
+    throw err;
+  }
+}
+
+/**
+ * Obtiene todos los usuarios para administración
+ */
+export async function getAllUsersAdmin() {
+  try {
+    const response = await databases.listDocuments(
+      DATABASE_ID,
+      USUARIOS_COLLECTION_ID,
+      [
+        Query.select(['$id', 'nombre_usuario', 'email', 'foto_perfil_url']),
+        Query.limit(100)
+      ]
+    );
+    
+    // Transformar URLs de perfil si es necesario
+    return response.documents.map(user => {
+      if (user.foto_perfil_url && user.foto_perfil_url.includes("/preview")) {
+        const fileId = user.foto_perfil_url.split("/files/")[1]?.split("/")[0];
+        user.foto_perfil_url = `https://fra.cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${fileId}/view?project=680e27de001ffc71f5a7`;
+      }
+      return user;
+    });
+  } catch (err) {
+    console.error("Error obteniendo usuarios:", err);
+    throw err;
+  }
+}
+
+export async function blockUser(userId) {
+  try {
+    return await updateUserStatus(userId, true);
+  } catch (err) {
+    console.error("Error bloqueando usuario:", err);
+    throw new Error(`No se pudo bloquear: ${err.message}`);
+  }
+}
+
+export async function unblockUser(userId) {
+  try {
+    return await updateUserStatus(userId, false);
+  } catch (err) {
+    console.error("Error desbloqueando usuario:", err);
+    throw new Error(`No se pudo desbloquear: ${err.message}`);
+  }}/**
+ * Elimina un usuario completamente (Database y Auth)
+ */
+export async function deleteUserAccount(userId) {
+  try {
+    // 1. Eliminar de Database
+    await databases.deleteDocument(
+      DATABASE_ID,
+      USUARIOS_COLLECTION_ID,
+      userId
+    );
+    
+    // 2. Eliminar de Auth (usando el endpoint de tu backend)
+    const result = await deleteUserFromAuth(userId);
+    
+    return { 
+      success: true, 
+      message: result.message || "La eliminación del usuario se completará en 2-3 días." 
+    };
+  } catch (err) {
+    console.error("Error eliminando cuenta de usuario:", err);
+    throw new Error(err.message || "Error al eliminar cuenta de usuario");
   }
 }

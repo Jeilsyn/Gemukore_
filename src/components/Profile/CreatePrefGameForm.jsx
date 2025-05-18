@@ -2,18 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { 
   createUserGamesProfile, 
   getAllVideoGames,
-  searchVideoGames 
+  searchVideoGames,
+  getUserGamesPreferences
 } from '../../lib/services/appwrite/collections';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
 import { useNavigate } from 'react-router-dom';
 
-
-
 function CreatePrefGameForm({ userId }) {
-
-
-  
   const [allGames, setAllGames] = useState([]);
   const [search, setSearch] = useState('');
   const [filteredGames, setFilteredGames] = useState([]);
@@ -22,48 +18,54 @@ function CreatePrefGameForm({ userId }) {
   const [favorito, setFavorito] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchTimeout, setSearchTimeout] = useState(null);
-  const navigate=useNavigate()
+  const [userCurrentGames, setUserCurrentGames] = useState([]);
+  const navigate = useNavigate();
+
   useEffect(() => {
-    async function fetchGames() {
+    async function fetchData() {
       try {
-        const games = await getAllVideoGames();
-        console.log('Total juegos cargados:', games.length);
+        const [games, userGames] = await Promise.all([
+          getAllVideoGames(),
+          userId ? getUserGamesPreferences(userId) : Promise.resolve([])
+        ]);
+        
         setAllGames(games);
+        setUserCurrentGames(userGames.map(g => g.videojuego_id.$id));
       } catch (error) {
-        console.error('Error cargando juegos:', error);
+        console.error('Error cargando datos:', error);
       }
     }
-    fetchGames();
-  }, []);
+    fetchData();
+  }, [userId]);
 
   const handleSearchChange = async (e) => {
-
     const value = e.target.value;
     setSearch(value);
     setSelectedGame(null);
 
-    // Limpiar timeout anterior
     if (searchTimeout) {
       clearTimeout(searchTimeout);
     }
 
-    // Configurar nuevo timeout para búsqueda
     if (value.trim().length >= 2) {
       setSearchTimeout(
         setTimeout(async () => {
           try {
             const results = await searchVideoGames(value);
-            setFilteredGames(results);
+            // Filtrar juegos que el usuario ya tiene
+            const filtered = results.filter(game => 
+              !userCurrentGames.includes(game.$id)
+            );
+            setFilteredGames(filtered);
           } catch (error) {
             console.error('Error en búsqueda:', error);
-            // Fallback en búsqueda client-side si falla la server-side
             const filtered = allGames.filter(game =>
-              game.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                .includes(value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""))
+              game.nombre.toLowerCase().includes(value.toLowerCase()) &&
+              !userCurrentGames.includes(game.$id)
             );
             setFilteredGames(filtered.slice(0, 50));
           }
-        }, 300) // Debounce de 300ms
+        }, 300)
       );
     } else {
       setFilteredGames([]);
@@ -82,42 +84,32 @@ function CreatePrefGameForm({ userId }) {
       alert('Por favor selecciona un videojuego y tu nivel.');
       return;
     }
-  
-    // Verificar que userId existe y es válido
-    if (!userId || typeof userId !== 'string') {
-      console.error('ID de usuario inválido:', userId);
+
+    if (!userId) {
       alert('Error: No se pudo identificar al usuario');
       return;
     }
-  
+
     const profileData = {
-      usuario_id: userId, // Asegurarnos que userId está correctamente asignado
+      usuario_id: userId,
       videojuego_id: selectedGame.$id,
       favorito,
       nivel_juego: nivelJuego,
     };
-  
-    console.log('Datos a enviar:', profileData); // Para depuración
-  
+
     try {
       setLoading(true);
-      const result = await createUserGamesProfile(profileData);
-      console.log('Resultado de creación:', result); // Verificar respuesta
-      alert('✅ Preferencia guardada.');
-      setSearch('');
-      setSelectedGame(null);
-      setNivelJuego('');
-      setFavorito(false);
-/*       navigate("/match")
- */      navigate("/loadingPage")
+      await createUserGamesProfile(profileData);
+      alert('✅ Juego añadido correctamente.');
+      navigate("/createGameInfoUser"); // Redirigir a configuración después de añadir
     } catch (err) {
       console.error('Error al guardar:', err);
-      alert(`❌ Error al guardar preferencia: ${err.message}`);
+      alert(`❌ Error al añadir juego: ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
-  // Limpiar timeout al desmontar el componente
+
   useEffect(() => {
     return () => {
       if (searchTimeout) {
@@ -127,74 +119,103 @@ function CreatePrefGameForm({ userId }) {
   }, [searchTimeout]);
 
   return (
-    <form onSubmit={handleSubmit} className="game-pref-form">
-      <h2>🎮 Añadir Juego Preferido</h2>
-
-      <div className="search-container">
-        <Input
-          label="Buscar videojuego"
-          id="search"
-          value={search}
-          onChange={handleSearchChange}
-          placeholder="Escribe al menos 2 caracteres..."
-        />
-        
-        {search && !selectedGame && (
-          <div className="suggestions">
-            {filteredGames.length > 0 ? (
-              <div className="suggestions-list">
-                {filteredGames.map((game) => (
-                  <div
-                    key={game.$id}
-                    className="suggestion-item"
-                    onClick={() => handleSelectGame(game)}
-                  >
-                    {game.nombre}
+    <div className="add-game-page">
+      <h1>➕ Añadir Nuevo Juego</h1>
+      
+      <form onSubmit={handleSubmit} className="game-pref-form">
+        <div className="search-container">
+          <Input
+            label="Buscar videojuego"
+            id="search"
+            value={search}
+            onChange={handleSearchChange}
+            placeholder="Escribe al menos 2 caracteres..."
+          />
+          
+          {search && !selectedGame && (
+            <div className="suggestions">
+              {filteredGames.length > 0 ? (
+                <div className="suggestions-list">
+                  {filteredGames.map((game) => (
+                    <div
+                      key={game.$id}
+                      className="suggestion-item"
+                      onClick={() => handleSelectGame(game)}
+                    >
+                      {game.nombre}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                search.trim().length >= 2 && (
+                  <div className="no-results">
+                    {userCurrentGames.length > 0 && filteredGames.length === 0 
+                      ? "Ya tienes este juego añadido"
+                      : "No se encontraron juegos"}
                   </div>
-                ))}
-              </div>
-            ) : (
-              search.trim().length >= 2 && (
-                <div className="no-results">No se encontraron juegos</div>
-              )
-            )}
+                )
+              )}
+            </div>
+          )}
+        </div>
+
+        {selectedGame && (
+          <div className="selected-game">
+            <h3>Juego seleccionado: {selectedGame.nombre}</h3>
+            <img 
+              src={selectedGame.imagen_url} 
+              alt={selectedGame.nombre} 
+              className="game-image"
+            />
           </div>
         )}
-      </div>
 
-      <div className="form-group">
-        <label htmlFor="nivelJuego">Tu nivel en el juego:</label>
-        <select
-          id="nivelJuego"
-          value={nivelJuego}
-          onChange={(e) => setNivelJuego(e.target.value)}
-          required
-        >
-          <option value="">-- Selecciona nivel --</option>
-          <option value="principiante">Principiante</option>
-          <option value="intermedio">Intermedio</option>
-          <option value="veterano">Veterano</option>
-        </select>
-      </div>
+        <div className="form-group">
+          <label htmlFor="nivelJuego">Tu nivel en el juego:</label>
+          <select
+            id="nivelJuego"
+            value={nivelJuego}
+            onChange={(e) => setNivelJuego(e.target.value)}
+            required
+          >
+            <option value="">-- Selecciona nivel --</option>
+            <option value="principiante">Principiante</option>
+            <option value="intermedio">Intermedio</option>
+            <option value="veterano">Veterano</option>
+          </select>
+        </div>
 
-      <div className="form-group checkbox-group">
-        <label>
-          <input
-            type="checkbox"
-            checked={favorito}
-            onChange={(e) => setFavorito(e.target.checked)}
-          />
-          {' '}
-          Marcar como favorito
-        </label>
-      </div>
+        <div className="form-group checkbox-group">
+          <label>
+            <input
+              type="checkbox"
+              checked={favorito}
+              onChange={(e) => setFavorito(e.target.checked)}
+            />
+            {' '}
+            Marcar como favorito
+          </label>
+        </div>
 
-      <Button type="submit" loading={loading} disabled={!selectedGame || !nivelJuego}>
-        Guardar Preferencia
-      </Button>
-    </form>
+        <div className="form-actions">
+          <Button 
+            type="button" 
+            onClick={() => navigate("/settings")}
+            variant="secondary"
+          >
+            Cancelar
+          </Button>
+          <Button 
+            type="submit" 
+            loading={loading} 
+            disabled={!selectedGame || !nivelJuego}
+          >
+            Añadir Juego
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 }
 
 export default CreatePrefGameForm;
-

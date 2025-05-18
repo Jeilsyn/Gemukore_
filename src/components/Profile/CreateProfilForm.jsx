@@ -123,7 +123,6 @@ const CrearPerfil = () => {
         email: user.email,
         fecha_registro: new Date().toISOString(),
         ultima_bonificacion: new Date().toISOString(), // <-- Para lógica diaria
-        es_eliminado: false
       };
 
       await createUserProfile(profileData, user.$id);

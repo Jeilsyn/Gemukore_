@@ -9,14 +9,14 @@ const NavBar = () => {
   const { current, logout } = useUser();
   const [profile, setProfile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const ADMIN = '682a1d8a003387bdeeb7';
 
   useEffect(() => {
     const fetchProfile = async () => {
       if (current) {
         try {
           const data = await getUserProfile(current.$id);
-/*           console.log("Perfil cargado:", data);
- */          setProfile(data);
+          setProfile(data);
 
           // SDK de Appwrite: generar URL segura
           const client = new Client()
@@ -52,13 +52,26 @@ const NavBar = () => {
 
         {current && profile && (
           <>
-            <li><Link to="/settings">Configuración</Link></li>
-            <li><Link to="/match">Match</Link></li>
-            <li><Link to="/requests">Requests</Link></li>
-            <li><Link to="/gameBoard">Lista</Link></li>
-            <li className="nav-info">
-              🪙 {profile.thomcoins} Thomcoins
-            </li>
+            {current.$id === ADMIN ? (
+              <>
+                <li><Link to="/settings">Configuración</Link></li>
+                <li><Link to="/tutoriales">Tutoriales</Link></li>
+                <li><Link to="/tutorialesAdmin">Subida de Tutoriales</Link></li>
+                <li><Link to="/historialUsuarios">Historial de Usuarios</Link></li>
+              </>
+            ) : (
+              <>
+                <li><Link to="/settings">Configuración</Link></li>
+                <li><Link to="/match">Match</Link></li>
+                <li><Link to="/requests">Requests</Link></li>
+                <li><Link to="/gameBoard">Lista</Link></li>
+                <li><Link to="/tutoriales">Tutoriales</Link></li>
+                <li className="nav-info">
+                  🪙 {profile.thomcoins} Thomcoins
+                </li>
+              </>
+            )}
+            
             <li className="nav-profile">
               {previewUrl && (
                 <img

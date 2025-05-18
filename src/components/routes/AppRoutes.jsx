@@ -6,11 +6,18 @@ import { CreatePerfil } from '../../pages/CreatePerfil'
 import { CreatePrefGame } from '../../pages/CreatePrefGame'
 import SettingsPage from '../../pages/SettingsPage';
 import LoadingPage from '../../pages/loadingPage'
+
+import LoadingPageRemain from '../animations/LoadingScreenRemain';
 import Matches from '../../pages/Match'; // Nuevo import
 import Requests from '../../pages/MatchRequests'; // Nuevo import
 import GameBoard from '../../pages/GameBoard';
 import CreateGameInfoUser from '../../pages/CreateGameInfoUser';
+import Tutoriales from '../../pages/Tutoriales';
 
+
+//Admin
+import TutorialesAdmin from '../../pages/TutorialesAdmin';
+import HistorialUsuariosPage from '../../pages/HistorialUsuariosPage';
 //Todas las rutas están aqui
 function AppRoutes() {
 
@@ -27,6 +34,10 @@ function AppRoutes() {
             <Route path="/requests" element={<Requests />} />
             <Route path="/gameBoard" element={<GameBoard />} />
             <Route path="/createGameInfoUser" element={<CreateGameInfoUser />} />
+            <Route path="/tutoriales" element={<Tutoriales />} />
+            <Route path="/loadingPageRemain" element={<LoadingPageRemain />} />
+            <Route path="/tutorialesAdmin" element={<TutorialesAdmin />} />
+            <Route path="/historialUsuarios" element={<HistorialUsuariosPage />} />
         </Routes>
     )
 

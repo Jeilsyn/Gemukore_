@@ -186,6 +186,10 @@ function CreateGameInfoUserC({ userId }) {
           </>
         )}
       </form>
+
+     <Button role="link" onClick={() => window.location = '/'}>
+  Salir
+</Button>
     </div>
   );
 }
