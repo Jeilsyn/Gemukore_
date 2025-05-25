@@ -1,0 +1,168 @@
+/* Login Container - Versión optimizada */
+.login-container {
+  width: 40vw;
+  min-width: 400px;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at top right, #01235274 30%, #062045 100%);
+  padding: 2rem !important;
+  margin: 4vh auto;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 240, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
+              inset 0 0 20px rgba(0, 180, 212, 0.1);
+}
+
+.login-container h1 {
+  margin: 1rem 0 2rem 0;
+  font-size: 2rem;
+  color: #ffffff;
+  font-weight: 600;
+  text-shadow: 0 0 15px #206ec7bf;
+  letter-spacing: 1px;
+  font-family: 'Orbitron', sans-serif;
+}
+
+/* Formulario optimizado */
+.login-form {
+  width: 90%;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(98, 160, 95, 0);
+  backdrop-filter: blur(12px);
+}
+
+/* Grupos de formulario */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  color: #e3f7ff;
+  font-weight: 600;
+  font-size: 1rem;
+  text-shadow: 0 0 3px #00bfff;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* Inputs */
+.form-group input {
+  width: 93%;
+  background: #0d1b2a;
+  color: #b3e0ff;
+  border: 1px solid #00aaff;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  border-color: #00faff;
+  box-shadow: 0 0 5px #00fbff7a;
+}
+
+/* Mensajes */
+.error-message {
+  color: #ff0000;
+  background: rgba(255, 92, 92, 0.12);
+  padding: 0.7rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin: 0.5rem 0 1rem 0;
+}
+
+.success-message {
+  color: #00ffa3;
+  background: rgba(0, 255, 163, 0.15);
+  padding: 0.7rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin: 0.5rem 0 1rem 0;
+}
+
+/* Enlaces y botón */
+.form-link {
+  font-size: 0.8rem;
+  color: #99bbcc;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.form-link a {
+  font-size: 0.8rem;
+  color: #00d0ff;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+
+button.login-button, .buttonRegister {
+  width: 100%;
+  padding: 0.8rem;
+  margin-top: 0.5rem;
+  background-color: #1343bc;
+  border-radius: 8px;
+  box-shadow:0 0 2px lightblue;
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .login-container {
+    width: 90vw;
+    min-width: unset;
+    padding: 1.5rem;
+  }
+  
+  .login-form {
+    padding: 1rem;
+  }
+}
+
+button {
+  background: linear-gradient(90deg, #00e0ff, #004d66);
+  border: none;
+  padding: 0.85rem 1.5rem;
+  border-radius: 12px;
+  color: #d0f8ff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 0 5px #00e0ffaa;
+  transition: background 0.3s ease, box-shadow 0.4s ease;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+}
+
+button:disabled {
+  background: #004d6699;
+  cursor: not-allowed;
+  box-shadow: none;
+  color: #99cfd6cc;
+}
+
+/* Hover solo si no está disabled */
+button:not(:disabled):hover {
+  background: linear-gradient(90deg, #00ffff, #006688);
+  box-shadow: 0 0 5px #00ffffcc;
+}
+
+/* Loader interno */
+.button-loader {
+  font-style: italic;
+  font-weight: 600;
+  color: #a0f9ff;
+  text-shadow: 0 0 2px #00f9ffcc;
+}

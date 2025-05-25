@@ -5,7 +5,10 @@ import { useNavigate } from "react-router-dom";
 import Input from "../ui/InputPerfil";
 import Button from "../ui/Button";
 import { ID, Permission } from "appwrite";
-import Modal from "../ui/Modal"; // <-- Asegúrate de tener este componente creado
+import Modal from "../ui/Modal";
+import { motion } from "framer-motion";
+import "../../styles/CreateProfile/perfil1.css";
+import { fadeInUp, fadeIn, scaleFadeIn } from "../animations/animation";
 
 const BUCKET_ID = "680e342900053bdb9610";
 
@@ -43,25 +46,22 @@ const CrearPerfil = () => {
         navigate("/login");
       }
     };
-
     loadUserData();
   }, [navigate]);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      if (!selectedFile.type.startsWith("image/")) {
-        alert("Por favor, selecciona un archivo de imagen");
-        return;
-      }
-      if (selectedFile.size > 5 * 1024 * 1024) {
-        alert("La imagen es demasiado grande (máximo 5MB)");
-        return;
-      }
-
-      setFile(selectedFile);
-      setPreviewUrl(URL.createObjectURL(selectedFile));
+    if (!selectedFile) return;
+    if (!selectedFile.type.startsWith("image/")) {
+      alert("Por favor, selecciona un archivo de imagen");
+      return;
     }
+    if (selectedFile.size > 5 * 1024 * 1024) {
+      alert("La imagen es demasiado grande (máximo 5MB)");
+      return;
+    }
+    setFile(selectedFile);
+    setPreviewUrl(URL.createObjectURL(selectedFile));
   };
 
   const uploadImage = async (user) => {
@@ -77,9 +77,7 @@ const CrearPerfil = () => {
           Permission.delete(`user:${user.$id}`),
         ]
       );
-
-      const fileUrl = storage.getFilePreview(BUCKET_ID, response.$id);
-      return fileUrl.toString();
+      return storage.getFilePreview(BUCKET_ID, response.$id).toString();
     } catch (error) {
       console.error("Error subiendo imagen:", error);
       throw error;
@@ -88,18 +86,12 @@ const CrearPerfil = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm({
-      ...form,
-      [name]: type === "checkbox" ? checked : value,
-    });
+    setForm({ ...form, [name]: type === "checkbox" ? checked : value });
   };
 
   const handleSelectChange = (e) => {
     const { name, value } = e.target;
-    setForm({
-      ...form,
-      [name]: value,
-    });
+    setForm({ ...form, [name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -122,11 +114,11 @@ const CrearPerfil = () => {
         foto_perfil_url: imageUrl || "",
         email: user.email,
         fecha_registro: new Date().toISOString(),
-        ultima_bonificacion: new Date().toISOString(), // <-- Para lógica diaria
+        ultima_bonificacion: new Date().toISOString(),
       };
 
       await createUserProfile(profileData, user.$id);
-      setShowModal(true); // Mostrar explicación
+      setShowModal(true);
     } catch (err) {
       console.error("Error al crear perfil:", err);
       alert(`Error al crear perfil: ${err.message}`);
@@ -139,7 +131,7 @@ const CrearPerfil = () => {
   };
 
   return (
-    <div className="profile-form-container">
+    <motion.div className="profile-form-container" {...fadeInUp}>
       <h2>Completa tu perfil {form.nombre_usuario}</h2>
       <form onSubmit={handleSubmit}>
         <Input label="Nombre de Usuario" name="nombre_usuario" type="text" value={form.nombre_usuario} onChange={handleChange} required />
@@ -187,18 +179,24 @@ const CrearPerfil = () => {
           {previewUrl && <img src={previewUrl} alt="Vista previa" className="preview-image" />}
         </div>
 
-        <Button type="submit">Guardar Perfil</Button>
+        {!showModal && (
+          <motion.div whileHover={{ scale: 1.05 }}>
+            <Button type="submit">Guardar Perfil</Button>
+          </motion.div>
+        )}
       </form>
 
       {showModal && (
         <Modal onClose={handleCloseModal}>
-          <h3>¡Perfil creado exitosamente!</h3>
-          <p>🎉 Has recibido <strong>2,500 Thomcoins</strong> de bienvenida.</p>
-          <p>💡 Cada vez que hagas un match, se descontarán <strong>100 Thomcoins</strong>.</p>
-          <p>🕒 Cada 24 horas recibirás un bono de <strong>500 Thomcoins</strong> automáticamente.</p>
+          <motion.div {...scaleFadeIn}>
+            <h3>¡Perfil creado exitosamente!</h3>
+            <p>🎉 Has recibido <strong>2,500 Thomcoins</strong> de bienvenida.</p>
+            <p>💡 Cada vez que hagas un match, se descontarán <strong>100 Thomcoins</strong>.</p>
+            <p>🕒 Cada 24 horas recibirás un bono de <strong>500 Thomcoins</strong> automáticamente.</p>
+          </motion.div>
         </Modal>
       )}
-    </div>
+    </motion.div>
   );
 };
 

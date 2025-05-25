@@ -11,7 +11,6 @@ function CreateGameInfoUser() {
 
   return (
     <div className="page-container">
-      <h1>Configuración de tus Juegos</h1>
       <CreateGameInfoUserC userId={current.$id} />
     </div>
   );

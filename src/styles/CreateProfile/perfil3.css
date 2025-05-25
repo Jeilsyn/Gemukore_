@@ -1,0 +1,110 @@
+.game-info-form-container {
+  width: 60% !important;
+  margin: 4vh auto;
+  padding: 2rem;
+  background: radial-gradient(circle at top right, #01235274 30%, #062045 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 240, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
+              inset 0 0 20px rgba(0, 180, 212, 0.1);
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.game-info-form-container h2 {
+  font-size: 1.8rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  text-shadow: 0 0 10px #00c6ff;
+}
+
+.game-info-form-container p {
+  color: #e3f7ff;
+  font-weight: 600;
+  font-size: 1rem;
+  text-shadow: 0 0 1px #00bfffaa;
+  display: block;
+  margin-bottom: 3rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  color: #e3f7ff;
+  font-weight: 600;
+  font-size: 1rem;
+  text-shadow: 0 0 3px #00bfff;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.form-group select,
+.form-group input,
+.form-group textarea {
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  transition: border-color 0.3s;
+}
+
+.form-group select:focus,
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.buttonNick {
+  
+  display: flex;
+  margin-top: 0rem;
+  width:50vw;
+  gap:3rem;
+  flex-direction: row;
+  align-items: center;
+  margin:auto;
+
+
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.error-message {
+  color: red;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.loading,
+.no-games {
+  text-align: center;
+  font-size: 1.1rem;
+  margin-top: 3rem;
+  color: #666;
+}
+
+.exit-button {
+    margin: auto;
+  text-align: center;
+  margin-top: 2rem;
+  width:40vw;
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(90px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

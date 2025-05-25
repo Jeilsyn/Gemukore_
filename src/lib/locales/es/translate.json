@@ -1,0 +1,180 @@
+{
+    "configuracion": {
+        "titulo": "Configuración",
+        "nombre": "Nombre de usuario",
+        "descripcion": "Descripción",
+        "nivel": "Nivel de jugador",
+        "tema": "Tema de la app",
+        "texto": "Tamaño de texto",
+        "idioma": "Idioma",
+        "foto": "Foto de perfil",
+        "guardar": "Guardar cambios"
+    },
+    "niveles": {
+        "principiante": "Principiante",
+        "intermedio": "Intermedio",
+        "veterano": "Veterano"
+    },
+    "temas": {
+        "claro": "Claro",
+        "oscuro": "Oscuro",
+        "contraste": "Contraste"
+    },
+    "idiomas": {
+        "es": "Español",
+        "en": "Inglés"
+    },
+    "zonaPeligrosa": {
+        "titulo": "Zona peligrosa",
+        "descripcion": "Acciones irreversibles. Procede con cuidado.",
+        "boton": "⚠️Eliminar mi cuenta⚠️"
+    },
+    "modal": {
+        "titulo": "Confirmar eliminación",
+        "descripcion": "¿Estás seguro de eliminar tu cuenta? Se perderán:",
+        "item1": "Tu perfil y datos personales",
+        "item2": "Tus preferencias de juego",
+        "item3": "Tus matches y conexiones",
+        "advertencia": "¡Esta acción no se puede deshacer!",
+        "cancelar": "Cancelar",
+        "confirmar": "Eliminar cuenta",
+        "eliminando": "Eliminando..."
+    },
+    "perfil": {
+        "actualizado": "Perfil actualizado correctamente",
+        "eliminado": "Cuenta eliminada correctamente",
+        "confirmarEliminacion": "¿Estás seguro de eliminar tu cuenta?\n\nSe perderán todos tus datos permanentemente."
+    },
+    "error": {
+        "cargarPerfil": "Error al cargar el perfil",
+        "actualizarPerfil": "Error al actualizar el perfil",
+        "eliminarCuenta": "Error al eliminar la cuenta",
+        "archivoNoImagen": "Por favor selecciona un archivo de imagen válido",
+        "imagenGrande": "La imagen es demasiado grande (máximo 5MB)"
+    },
+    "matches": {
+        "title": "GemuFusion",
+        "loading": "Cargando candidatos...",
+        "profileImageAlt": "Foto de perfil",
+        "gamePreferences": "Preferencias de Juego",
+        "level": "Nivel",
+        "skip": "Saltar",
+        "match": "Gemu",
+        "noPreferences": "Sin preferencias",
+        "errors": {
+            "noUserId": "No se pudo obtener el ID del usuario",
+            "loadCandidates": "Error cargando candidatos",
+            "loadPreferences": "Error cargando preferencias",
+            "notAuthenticated": "Usuario no autenticado",
+            "invalidCandidate": "Candidato inválido",
+            "matchError": "Error al hacer match",
+            "skipError": "Error al saltar usuario"
+        }
+    },
+    "requests": {
+        "title": "Solicitudes",
+        "noRequests": "No tienes solicitudes de match pendientes.",
+        "noImage": "Sin imagen",
+        "gamePreferences": "Preferencias de Juego",
+        "reject": "Rechazar",
+        "accept": "Aceptar",
+        "loading":"Cargando las solicitudes",
+        "errors": {
+            "notAuthenticated": "Usuario no autenticado",
+            "invalidLike": "Like sin emisor_id",
+            "loadProfileError": "Error cargando perfil para like {{id}}",
+            "loadPendingError": "Error cargando solicitudes pendientes",
+            "incompleteData": "Datos de like incompletos",
+            "decisionError": "Error al procesar decisión",
+            "decisionAlert": "Error al procesar la solicitud: "
+        }
+    },
+    "pokemonCard": {
+        "gameLevel": "{{game}} - Nivel {{level}}"
+    },
+    "levels": {
+        "principiante": "Principiante",
+        "intermedio": "Intermedio",
+        "veterano": "Veterano"
+    },
+    "matchList": {
+        "title": "Tus Matches de Juego",
+        "loading": "Cargando matches...",
+        "noMatches": "Aún no tienes matches. ¡Sigue buscando!",
+        "detailTitle": "Detalles de {{name}}",
+        "gameNickname": "Nickname",
+        "gameRole": "Rol",
+        "gameLevel": "Nivel",
+        "notSpecified": "No especificado",
+        "errors": {
+            "loadError": "Error al cargar matches. Por favor, intenta nuevamente."
+        }
+    },
+    "tutorials": {
+        "title": "Tutoriales",
+        "selectGame": "Selecciona un videojuego",
+        "allGames": "Todos los videojuegos",
+        "recommendedLevel": "Nivel recomendado",
+        "allLevels": "Todos los niveles",
+        "backButton": "Volver",
+        "unknownGame": "Juego desconocido",
+        "relatedVideo": "Video relacionado",
+        "videoTitle": "Video tutorial",
+        "viewDetails": "Ver más detalles",
+        "loading": "Cargando tutoriales...",
+        "noTutorials": "No se encontraron tutoriales con los filtros seleccionados",
+        "errors": {
+            "loadGames": "Error al cargar los videojuegos",
+            "loadTutorials": "Error al cargar los tutoriales",
+            "loadTutorial": "Error al cargar el tutorial"
+        },
+        "levels": {
+            "principiante": "Principiante",
+            "intermedio": "Intermedio",
+            "veterano": "Veterano"
+        }
+    },
+    "navbar": {
+        "home": "Inicio",
+        "login": "Iniciar sesión",
+        "settings": "Configuración",
+        "tutorials": "Tutoriales",
+        "uploadTutorials": "Subida de Tutoriales",
+        "userHistory": "Historial de Usuarios",
+        "match": "GemuFusion",
+        "requests": "Solicitudes",
+        "list": "Compañeros de juegos",
+        "viewProfile": "Configuracion",
+        "thomcoins": "🪙",
+        "logout": "Cerrar Sesión",
+        "profileImageAlt": "Foto de perfil",
+        "errors": {
+            "getProfile": "Error obteniendo perfil"
+        }
+    },
+    "settingsGame": {
+        "title": "Gestion de perfil de Videojuego",
+        "username": "Nombre de usuario",
+        "yourGames": "Tus Videojuegos",
+        "loadingGames": "Cargando tus juegos...",
+        "noGames": "No tienes juegos añadidos aún.",
+        "level": "Nivel",
+        "nickname": "Nickname",
+        "role": "Rol",
+        "delete": "Eliminar",
+        "addGame": "Añadir Nuevo Juego",
+        "editNickname": "Editar Nickname y roles",
+        "saveChanges": "Guardar cambios",
+        "profileUpdated": "Perfil actualizado correctamente",
+        "gameDeleted": "Juego eliminado correctamente",
+        "confirmDelete": "¿Estás seguro de que quieres eliminar este juego de tu perfil?",
+        "errors": {
+            "invalidImage": "Por favor selecciona un archivo de imagen válido",
+            "imageTooLarge": "La imagen es demasiado grande (máx. 5MB)",
+            "deleteError": "Error eliminando juego",
+            "deleteFailed": "Error al eliminar el juego",
+            "updateError": "Error actualizando perfil",
+            "updateFailed": "Error al actualizar perfil"
+        }
+    }
+}

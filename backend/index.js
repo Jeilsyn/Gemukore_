@@ -4,19 +4,19 @@ const cors = require("cors");
 
 const app = express();
 
-// Configuración de CORS específica
+// Configuración de CORS 
 const corsOptions = {
-  origin: 'http://localhost:3000', // Exactamente tu URL de frontend
+  origin: 'http://localhost:3000', //   URL de frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: false, // Importante: false cuando usas '*'
+  credentials: false, 
   optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Configuración de Appwrite (reemplaza con tu key real)
+// Configuración de Appwrite 
 const client = new Client()
   .setEndpoint("https://fra.cloud.appwrite.io/v1")
   .setProject("680e27de001ffc71f5a7")
@@ -24,7 +24,7 @@ const client = new Client()
 
 const users = new Users(client);
 
-// Endpoint mejorado para eliminar usuarios
+// Endpoint  para eliminar usuarios
 app.post("/eliminar-usuario", async (req, res) => {
   try {
     const { userId } = req.body;
@@ -54,7 +54,6 @@ app.post("/eliminar-usuario", async (req, res) => {
 app.post("/bloquear", async (req, res) => {
   const { userId, block } = req.body;
 
-  // 1. Método directo REST API (bypass SDK)
   const response = await fetch(`https://fra.cloud.appwrite.io/v1/users/${userId}/status`, {
     method: "POST",
     headers: {
@@ -65,13 +64,11 @@ app.post("/bloquear", async (req, res) => {
     body: JSON.stringify({ status: block })
   });
 
-  // 2. Verificación estricta
   if (!response.ok) {
     const error = await response.json();
     throw new Error(`HTTP ${response.status}: ${error.message}`);
   }
 
-  // 3. Confirmación con doble verificación
   const updatedUser = await users.get(userId);
   res.json({
     success: updatedUser.status === (block ? 'blocked' : 'active'),

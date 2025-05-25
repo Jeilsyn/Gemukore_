@@ -4,7 +4,6 @@ import { UserProvider } from "./context/AuthContext";
 import AppRoutes from "./components/routes/AppRoutes.jsx";
 import { useEffect } from 'react';
 import { fillVideojuegos, } from '../src/lib/services/appwrite/collections.js'; // tu ruta correcta
-
 function App() {
   /*   useEffect(() => {
       fillVideojuegos();

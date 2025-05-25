@@ -1,4 +1,4 @@
-import { databases } from "./appwriteClient.js"; // Asegúrate que esté bien importado
+import { databases,account } from "./appwriteClient.js"; // Asegúrate que esté bien importado
 import { Query } from "appwrite";
 /* import fs from 'fs';
 import path from 'path';
@@ -16,7 +16,7 @@ const MATCHES_COLLECTION = "68188f96001e495758a2";
 const LIKES_COLLECTION = "681894a3001f3d2e9a0e";
 const USUARIO_GAME_INFO_COLLECTION_ID = "681f603e00343d636ac5";
 const TUTORIALES_COLLECTION_ID = "682203a70001320efb74";
-
+const ADMIN_ID='682a1d8a003387bdeeb7'
 
 /* // Ejecuta esta función una sola vez
 export async function corregirURLsPreview() {
@@ -273,16 +273,16 @@ export async function getAllUsers(currentUserId) {
   const matchedIds = matches.documents
     .filter((match) => match.usuarioss_ids?.some((u) => u.$id === currentUserId))
     .flatMap((match) => match.usuarioss_ids.map((u) => u.$id))
-    .filter((id) => id !== currentUserId);
+    .filter((id) => id !== currentUserId  );
 
   const rejectedIds = likes.documents
     .filter((like) => like.estado === "rechazado_receptor")
     .map((like) => like.receptor_id);
 
-  const excludedIds = new Set([...rejectedIds, ...matchedIds]);
+  const excludedIds = new Set([...rejectedIds, ...matchedIds, ADMIN_ID]);
 
   return allUsers.documents.filter(
-    (user) => user.$id !== currentUserId && !excludedIds.has(user.$id)
+    (user) => user.$id !== currentUserId && !excludedIds.has(user.$id) &&  user.$id !== ADMIN_ID
   );
 }
 // Create a new like
@@ -1199,5 +1199,82 @@ export async function deleteUserAccount(userId) {
   } catch (err) {
     console.error("Error eliminando cuenta de usuario:", err);
     throw new Error(err.message || "Error al eliminar cuenta de usuario");
+  }
+}
+
+//eliminar usuario settings 
+export async function deleteUserAccountAndRedirect(userId, navigate) {
+  try {
+    // 1. Primero cerrar la sesión activa (antes de eliminar la cuenta)
+    try {
+      await account.deleteSession('current');
+    } catch (sessionError) {
+      console.warn("Error al cerrar sesión:", sessionError);
+    }
+
+    // 2. Eliminar documentos relacionados
+    const collectionsToClean = [
+      USUARIOS_JUEGOS_COLLECTION_ID,
+      USUARIO_GAME_INFO_COLLECTION_ID,
+      LIKES_COLLECTION,
+      MATCHES_COLLECTION
+    ];
+
+    for (const collectionId of collectionsToClean) {
+      try {
+        const userDocs = await databases.listDocuments(
+          DATABASE_ID,
+          collectionId,
+          [Query.equal("usuario_id", userId)]
+        );
+        
+        await Promise.all(
+          userDocs.documents.map(doc => 
+            databases.deleteDocument(DATABASE_ID, collectionId, doc.$id)
+          )
+        );
+      } catch (error) {
+        console.warn(`Error limpiando ${collectionId}:`, error);
+      }
+    }
+
+    // 3. Eliminar perfil principal
+    await databases.deleteDocument(
+      DATABASE_ID,
+      USUARIOS_COLLECTION_ID,
+      userId
+    );
+
+    // 4. Eliminar cuenta de autenticación (usando endpoint backend)
+    const authResponse = await fetch('http://localhost:3002/eliminar-usuario', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId })
+    });
+
+    if (!authResponse.ok) {
+      throw new Error("Error al eliminar autenticación");
+    }
+
+    // 5. Redirigir
+    if (navigate) {
+      navigate("/login", { replace: true });
+            window.location.reload()
+
+    }
+
+    return { 
+      success: true, 
+      message: "Cuenta eliminada correctamente" 
+    };
+  } catch (error) {
+    console.error("Error en deleteUserAccountAndRedirect:", error);
+    
+    // Forzar redirección incluso si hay error
+    if (navigate) {
+      navigate("/", { replace: true });
+    }
+    
+    throw new Error(error.message || "Error al eliminar la cuenta");
   }
 }

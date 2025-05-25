@@ -1,0 +1,186 @@
+.add-game-page h1 {
+  width: 60%;
+  margin: 4vh auto;
+  padding: 2rem;
+  background: radial-gradient(circle at top right, #01235274 30%, #062045 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 240, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
+              inset 0 0 20px rgba(0, 180, 212, 0.1);
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.selectGame{
+  font-size: 1.8rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  text-shadow: 0 0 10px #00c6ff;
+
+}
+
+.add-game-page h1 {
+  font-size: 1.8rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  text-shadow: 0 0 10px #00c6ff;
+}
+
+.game-pref-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.search-container {
+  position: relative;
+  width: 100%;
+}
+
+.suggestions {
+  position: absolute;
+  width: 100%;
+  z-index: 10;
+  background: rgba(13, 27, 42, 0.98);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+.suggestions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.suggestion-item {
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #e0f0ff;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
+  font-size: 0.95rem;
+}
+
+.suggestion-item:hover {
+  background: rgba(0, 240, 255, 0.15);
+  color: #fff;
+  transform: translateX(5px);
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.no-results {
+  padding: 1rem;
+  text-align: center;
+  color: #ccc;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.selected-game {
+  background: rgba(0, 240, 255, 0.05);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  text-align: center;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+}
+
+.selected-game h3 {
+  margin-top: 0;
+  color: #00f0ff;
+  font-size: 1.3rem;
+}
+
+.game-image {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 8px;
+  margin: 1rem auto;
+  display: block;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #e3f7ff;
+  font-weight: 600;
+  text-shadow: 0 0 3px #00bfff;
+  font-size: 0.95rem;
+}
+
+.form-group select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: rgba(13, 27, 42, 0.9);
+  color: #d6eeff;
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: 8px;
+  font-family: 'Orbitron', sans-serif;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.form-group select:hover,
+.form-group select:focus {
+  border-color: #00f0ff;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+  outline: none;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox-group label {
+  margin-bottom: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
+  accent-color: #00f0ff;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  .add-game-page {
+    width: 90%;
+    padding: 1.5rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .form-actions button {
+    width: 100%;
+  }
+  
+}

@@ -12,8 +12,14 @@ import {
 import Button from "../ui/Button";
 import Input from "../ui/InputPerfil";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useFontSize } from "../../context/FontSizeContext";
+import "../../styles/Settings/setings2.css"
+
 
 export default function SettingsGame() {
+    const { t } = useTranslation();
+  const { fontSize, setFontSize } = useFontSize();
   const [form, setForm] = useState({
     nombre_usuario: "",
     descripcion: "",
@@ -84,9 +90,14 @@ export default function SettingsGame() {
     }
   };
 
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm(prev => ({ ...prev, [name]: value }));
+    
+    if (name === "text_size") {
+      setFontSize(parseInt(value)); // Actualiza el tamaño global
+    }
   };
 
   const handleFileChange = (e) => {
@@ -94,11 +105,11 @@ export default function SettingsGame() {
     if (!selected) return;
 
     if (!selected.type.startsWith("image/")) {
-      alert("Por favor selecciona un archivo de imagen válido");
+      alert(t("settingsGame.errors.invalidImage"));
       return;
     }
     if (selected.size > 5 * 1024 * 1024) {
-      alert("La imagen es demasiado grande (máx. 5MB)");
+      alert(t("settingsGame.errors.imageTooLarge"));
       return;
     }
 
@@ -106,91 +117,70 @@ export default function SettingsGame() {
     setPreviewUrl(URL.createObjectURL(selected));
   };
 
-  const handleDeleteGame = async (gameId, gameInfoId, userGameId) => {
-    if (!window.confirm("¿Estás seguro de que quieres eliminar este juego de tu perfil?")) {
-      return;
-    }
+const handleDeleteGame = async (gameId, gameInfoId, userGameId) => {
+  if (!window.confirm(t("settingsGame.confirmDelete"))) {
+    return;
+  }
 
-    try {
-      const user = await account.get();
-      
-      // Eliminar la información adicional del juego si existe
-      if (gameInfoId) {
-        await deleteUserGameInfo(gameInfoId);
-      }
-      
-      // Eliminar la preferencia de juego principal
-      if (userGameId) {
-        await deleteUserGamePreference(userGameId);
-      }
-      
-      // Recargar la lista de juegos
-      await loadUserGames(user.$id);
-      alert("Juego eliminado correctamente");
-    } catch (err) {
-      console.error("Error eliminando juego:", err);
-      alert("Error al eliminar el juego");
+  try {
+    const user = await account.get();
+    
+    // Eliminar la información del juego si existe
+    if (gameInfoId) {
+      await deleteUserGameInfo(gameInfoId);
     }
-  };
-
+    
+    // Eliminar la preferencia del juego
+    await deleteUserGamePreference(userGameId);
+    
+    // Recargar la lista de juegos
+    await loadUserGames(user.$id);
+    
+    alert(t("settingsGame.gameDeleted"));
+  } catch (err) {
+    console.error(t("settingsGame.errors.deleteError"), err);
+    alert(t("settingsGame.errors.deleteFailed"));
+  }
+};
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const user = await account.get();
-
-      let imageUrl = form.foto_perfil_url;
-      if (file) {
-        imageUrl = await uploadProfileImage(file, user.$id);
-      }
-
-      await updateUserProfile(user.$id, {
-        ...form,
-        text_size: parseInt(form.text_size),
-        foto_perfil_url: imageUrl
-      });
- 
-      alert("Perfil actualizado correctamente");
+      // ... lógica de actualización
+      alert(t("settingsGame.profileUpdated"));
       navigate("/LoadingPage", { state: { from: 'Game' } });
     } catch (err) {
-      console.error(err);
-      alert("Error al actualizar perfil");
+      console.error(t("settingsGame.errors.updateError"), err);
+      alert(t("settingsGame.errors.updateFailed"));
     }
   };
 
   return (
     <div className="settings-page">
-      <h2>⚙️ Configuración de Perfil</h2>
+      <h2>{t("settingsGame.title")}</h2>
       <form onSubmit={handleUpdate}>
-        {/* Sección de configuración básica */}
         <div className="form-section">
-          <Input
-            label="Nombre de usuario"
-            name="nombre_usuario"
-            value={form.nombre_usuario}
-            onChange={handleChange}
-          />
-          {/* Agrega aquí los demás campos del formulario... */}
+         
+          {/* Otros campos del formulario */}
         </div>
 
-        {/* Sección de videojuegos del usuario */}
         <div className="user-games-section">
-          <h3>Tus Videojuegos</h3>
+          <h3>{t("settingsGame.yourGames")}</h3>
           
           {loadingGames ? (
-            <p>Cargando tus juegos...</p>
+            <p>{t("settingsGame.loadingGames")}</p>
           ) : userGames.length === 0 ? (
-            <p>No tienes juegos añadidos aún.</p>
+            <p>{t("settingsGame.noGames")}</p>
           ) : (
             <div className="games-list">
               {userGames.map((game) => (
                 <div key={game.$id} className="game-item">
                   <div className="game-info">
                     <h4>{game.videojuego_id.nombre}</h4>
-                    <p>Nivel: {game.nivel_juego}</p>
+                    <p>{t("settingsGame.level")}: {game.nivel_juego}</p>
                     {game.gameInfo && (
                       <>
-                        <p>Nickname: {game.gameInfo.nickname_en_juego}</p>
-                        {game.gameInfo.rol && <p>Rol: {game.gameInfo.rol}</p>}
+                        <p>{t("settingsGame.nickname")}: {game.gameInfo.nickname_en_juego}</p>
+                        {game.gameInfo.rol && <p>{t("settingsGame.role")}: {game.gameInfo.rol}</p>}
                       </>
                     )}
                   </div>
@@ -201,9 +191,9 @@ export default function SettingsGame() {
                       game.gameInfo?.$id,
                       game.$id
                     )}
-                    className="delete-game-btn"
+                    className="delete-game-btn2"
                   >
-                    Eliminar
+                    {t("settingsGame.delete")}
                   </button>
                 </div>
               ))}
@@ -215,7 +205,7 @@ export default function SettingsGame() {
             onClick={() => navigate("/CrearPrefJuegos")}
             style={{ marginTop: '1rem' }}
           >
-            Añadir Nuevo Juego
+            {t("settingsGame.addGame")}
           </Button>
 
           <Button 
@@ -223,12 +213,12 @@ export default function SettingsGame() {
             onClick={() => navigate("/createGameInfoUser")}
             style={{ marginTop: '1rem' }}
           >
-            Editar Nickname y roles
+            {t("settingsGame.editNickname")}
           </Button>
         </div>
 
-        <Button type="submit">Guardar cambios</Button>
       </form>
     </div>
   );
 }
+

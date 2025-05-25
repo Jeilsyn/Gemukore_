@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import {
   getUserGamesPreferences,
   getUserGameInfoByGame,
@@ -7,18 +8,18 @@ import {
 } from '../../lib/services/appwrite/collections';
 import Input from '../ui/InputGIU';
 import Button from '../ui/Button';
+import { fadeInUp, scaleFadeIn, fadeIn } from '../animations/animation';
+import "../../styles/CreateProfile/perfil3.css"
 
 function CreateGameInfoUserC({ userId }) {
   const [userGames, setUserGames] = useState([]);
   const [allGames, setAllGames] = useState([]);
   const [selectedGameId, setSelectedGameId] = useState('');
-  const [gameInfo, setGameInfo] = useState({
-    nickname: '',
-    rol: ''
-  });
+  const [gameInfo, setGameInfo] = useState({ nickname: '', rol: '' });
   const [loading, setLoading] = useState(false);
   const [formLoading, setFormLoading] = useState(true);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     async function loadData() {
@@ -26,11 +27,9 @@ function CreateGameInfoUserC({ userId }) {
         try {
           const gamesPrefs = await getUserGamesPreferences(userId);
           const gamesList = await getAllVideoGames();
-
           const combinedGames = gamesPrefs.map(pref => {
             const gameId = pref.videojuego_id?.$id;
             const gameInfo = gamesList.find(game => game.$id === gameId);
-            
             return {
               ...pref,
               nombre: gameInfo?.nombre || pref.videojuego_id?.nombre || `Juego (ID: ${gameId})`,
@@ -85,7 +84,6 @@ function CreateGameInfoUserC({ userId }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!selectedGameId || !gameInfo.nickname) {
       setError("Debes seleccionar un juego y proporcionar un nickname");
       return;
@@ -94,6 +92,7 @@ function CreateGameInfoUserC({ userId }) {
     try {
       setLoading(true);
       setError('');
+      setSuccessMessage('');
 
       await upsertUserGameInfo(userId, selectedGameId, {
         nickname: gameInfo.nickname,
@@ -108,7 +107,7 @@ function CreateGameInfoUserC({ userId }) {
         });
       }
 
-      alert("Información guardada correctamente");
+      setSuccessMessage("Información guardada correctamente ✅");
     } catch (err) {
       console.error("Error saving game info:", err);
       setError("Error al guardar la información");
@@ -118,25 +117,25 @@ function CreateGameInfoUserC({ userId }) {
   };
 
   if (formLoading) {
-    return <div className="loading">Cargando tus juegos...</div>;
+    return <motion.div className="loading" {...fadeIn}>Cargando tus juegos...</motion.div>;
   }
 
   if (userGames.length === 0) {
     return (
-      <div className="no-games">
+      <motion.div className="no-games" {...fadeInUp}>
         <p>No tienes juegos registrados aún.</p>
         <p>Primero añade tus juegos preferidos en la sección correspondiente.</p>
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="game-info-form-container">
+    <motion.div className="game-info-form-container" {...fadeInUp}>
       <h2>Configura tus nicknames y roles</h2>
       <p>Completa tu información para cada juego que hayas añadido</p>
 
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
+        <motion.div className="form-group" {...fadeIn}>
           <label htmlFor="game-select">Selecciona un juego:</label>
           <select
             id="game-select"
@@ -151,11 +150,11 @@ function CreateGameInfoUserC({ userId }) {
               </option>
             ))}
           </select>
-        </div>
+        </motion.div>
 
         {selectedGameId && (
           <>
-            <div className="form-group">
+            <motion.div className="form-group" {...fadeIn}>
               <Input
                 label="Tu nickname en este juego:"
                 id="nickname"
@@ -165,9 +164,9 @@ function CreateGameInfoUserC({ userId }) {
                 required
                 placeholder="Ej: Player123"
               />
-            </div>
+            </motion.div>
 
-            <div className="form-group">
+            <motion.div className="form-group" {...fadeIn}>
               <Input
                 label="Tu rol principal (opcional):"
                 id="rol"
@@ -176,21 +175,27 @@ function CreateGameInfoUserC({ userId }) {
                 onChange={handleInputChange}
                 placeholder="Ej: Tanque, DPS, Support"
               />
-            </div>
+            </motion.div>
 
             {error && <div className="error-message">{error}</div>}
+            {successMessage && (
+              <motion.div className="success-message" {...fadeIn}>
+                {successMessage}
+              </motion.div>
+            )}
 
-            <Button type="submit" loading={loading}>
-              Guardar Información
-            </Button>
+            <motion.div className="buttonNick" whileHover={{ scale: 1.05 }}>
+              <Button type="submit" loading={loading}>
+                Guardar Información
+              </Button>
+              <Button role="link" onClick={() => window.location = '/'}>
+                Salir
+              </Button>
+            </motion.div>
           </>
         )}
       </form>
-
-     <Button role="link" onClick={() => window.location = '/'}>
-  Salir
-</Button>
-    </div>
+    </motion.div>
   );
 }
 
