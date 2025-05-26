@@ -14,7 +14,7 @@
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "node-appwrite": "^10.0.0",
-    "typescript": "4.9.5"
+"typescript": "^5.0.0"
 
   }
 }
