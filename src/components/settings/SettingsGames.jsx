@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { account } from "../../lib/services/appwrite/appwriteClient";
 import {
   getUserProfile,
+  updateUserProfile,
+  uploadProfileImage,
   getUserGamesPreferences,
   deleteUserGameInfo,
   deleteUserGamePreference,
@@ -13,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useFontSize } from "../../context/FontSizeContext";
 import "../../styles/Settings/setings2.css"
-import i18n from "../../lib/translate/i18n.js"
+
 
 export default function SettingsGame() {
     const { t } = useTranslation();
@@ -50,10 +52,6 @@ export default function SettingsGame() {
           foto_perfil_url: response.foto_perfil_url || ""
         });
 
-  if (response.idioma) {
-          await i18n.changeLanguage(response.idioma);
-        }
-
         if (response.foto_perfil_url) {
           const fileId = response.foto_perfil_url.split('/files/')[1]?.split('/')[0];
           const bucketId = '680e342900053bdb9610';
@@ -69,7 +67,7 @@ export default function SettingsGame() {
       }
     }
     fetchUserData();
-  }, [t]);
+  }, []);
 
   const loadUserGames = async (userId) => {
     setLoadingGames(true);
@@ -98,10 +96,8 @@ export default function SettingsGame() {
     setForm(prev => ({ ...prev, [name]: value }));
     
     if (name === "text_size") {
-      setFontSize(parseInt(value));
+      setFontSize(parseInt(value)); // Actualiza el tamaño global
     }
-
-
   };
 
   const handleFileChange = (e) => {
