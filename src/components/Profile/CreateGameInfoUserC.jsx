@@ -11,17 +11,19 @@ import Button from '../ui/Button';
 import { fadeInUp, scaleFadeIn, fadeIn } from '../animations/animation';
 import "../../styles/CreateProfile/perfil3.css"
 
+//Formulario para almacenar la información relativa a cada videojuego seleccionado por el usuario
 function CreateGameInfoUserC({ userId }) {
-  const [userGames, setUserGames] = useState([]);
+  const [userGames, setUserGames] = useState([]);//lista de juegos favoritos del usuario 
   const [allGames, setAllGames] = useState([]);
-  const [selectedGameId, setSelectedGameId] = useState('');
-  const [gameInfo, setGameInfo] = useState({ nickname: '', rol: '' });
+  const [selectedGameId, setSelectedGameId] = useState('');//juego seleccionado 
+  const [gameInfo, setGameInfo] = useState({ nickname: '', rol: '' });//Nickname y role para el usuario en esos juegos 
   const [loading, setLoading] = useState(false);
   const [formLoading, setFormLoading] = useState(true);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
+    //Cargar los juegos del usuario 
     async function loadData() {
       if (userId) {
         try {
@@ -52,6 +54,7 @@ function CreateGameInfoUserC({ userId }) {
   }, [userId]);
 
   useEffect(() => {
+    //Cargar los datos del usuario para ese juego, si no hay nada se dejan los campos vacíos 
     async function loadGameInfo() {
       if (selectedGameId && userId) {
         try {
@@ -74,6 +77,7 @@ function CreateGameInfoUserC({ userId }) {
     loadGameInfo();
   }, [selectedGameId, userId]);
 
+  //Al escribir en el campo actualiza gameInfo, es decir la informacion del usuario dentro del videojuego
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setGameInfo(prev => ({
@@ -82,6 +86,7 @@ function CreateGameInfoUserC({ userId }) {
     }));
   };
 
+  //Verificar que el usuario hay elegido un juego y ha puesto su nickname y role 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedGameId || !gameInfo.nickname) {
@@ -107,7 +112,7 @@ function CreateGameInfoUserC({ userId }) {
         });
       }
 
-      setSuccessMessage("Información guardada correctamente ✅");
+      setSuccessMessage("Información guardada correctamente ");
     } catch (err) {
       console.error("Error saving game info:", err);
       setError("Error al guardar la información");

@@ -88,21 +88,7 @@ const NavBar = () => {
       <Link to="/" className="logo-link">
         <img src={`${process.env.PUBLIC_URL}/logo.png`} alt="Logo" className="navbar-logo" />
       </Link>
-
-      {/* Botón hamburguesa visible solo en móvil */}
-      <button
-        className={`hamburger-menu ${menuOpen ? 'open' : ''}`}
-        onClick={toggleMenu}
-        aria-label="Toggle menu"
-        aria-expanded={menuOpen}
-      >
-        <span />
-        <span />
-        <span />
-      </button>
-
       <motion.nav className="navbar" {...fadeInNav2}>
-        {/* Añadimos clase open para mostrar/ocultar menú en móvil */}
         <ul className={`nav-list ${menuOpen ? 'open' : ''}`}>
           {!current && (
             <li>
@@ -116,11 +102,6 @@ const NavBar = () => {
             <>
               {current.$id === ADMIN ? (
                 <>
-                  <li>
-                    <Link to="/settings" onClick={() => setMenuOpen(false)}>
-                      {t('navbar.settings')}
-                    </Link>
-                  </li>
                   <li>
                     <Link to="/tutoriales" onClick={() => setMenuOpen(false)}>
                       {t('navbar.tutorials')}
@@ -136,6 +117,7 @@ const NavBar = () => {
                       {t('navbar.userHistory')}
                     </Link>
                   </li>
+                  {/* Aquí NO muestro link a configuración para admin */}
                 </>
               ) : (
                 <>
@@ -159,6 +141,7 @@ const NavBar = () => {
                       {t('navbar.tutorials')}
                     </Link>
                   </li>
+                 
                   <li className="nav-info">{profile.thomcoins} {t('navbar.thomcoins')}</li>
                 </>
               )}
@@ -178,9 +161,12 @@ const NavBar = () => {
                       exit={{ opacity: 0, y: -10 }}
                       className="dropdown-menu"
                     >
-                      <button className="dropdown-item" onClick={goToProfile}>
-                        {t('navbar.viewProfile')}
-                      </button>
+                      {/* Solo mostrar configuración si NO es admin */}
+                      {current.$id !== ADMIN && (
+                        <button className="dropdown-item" onClick={goToProfile}>
+                          {t('navbar.viewProfile')}
+                        </button>
+                      )}
                       <button
                         className="dropdown-item"
                         onClick={() => {
@@ -199,6 +185,18 @@ const NavBar = () => {
           )}
         </ul>
       </motion.nav>
+      <div className='botonDiv'>
+        <button
+          className={`hamburger-menu ${menuOpen ? 'open' : ''}`}
+          onClick={toggleMenu}
+          aria-label="Toggle menu"
+          aria-expanded={menuOpen}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+      </div>
     </header>
   );
 };

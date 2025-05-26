@@ -6,9 +6,9 @@ body {
   font-family: 'Orbitron', sans-serif;
   background-color: #0a0f1e;
   
-  overflow-y:auto; /* Permite scroll vertical */
+  overflow-y:auto; 
   scrollbar-width: inherit;
-  scrollbar-color: #00aaff33 transparent; /* Firefox */}
+  scrollbar-color: #00aaff33 transparent;
 
 .home-container {
   height: 92vh;
@@ -44,4 +44,5 @@ body {
   .home-title {
     font-size: 5rem;
   }
+}
 }

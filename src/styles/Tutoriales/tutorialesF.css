@@ -1,0 +1,126 @@
+.tutorial-form-container {
+  max-width: 800px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: rgba(0, 15, 30, 0.85);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+  font-family: "Orbitron", sans-serif;
+  color: #e0f7ff;
+}
+
+.tutorial-form-container h2,
+.tutorial-form-container h3 {
+  text-align: center;
+  font-size: 1.8rem;
+  text-shadow: 0 0 6px #00f0ff;
+  margin-bottom: 1rem;
+}
+
+.tutorial-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tutorial-form input,
+.tutorial-form textarea,
+.tutorial-form select {
+  background: rgba(0, 20, 40, 0.95);
+  color: #e0f7ff;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 1rem;
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+.tutorial-form input:focus,
+.tutorial-form textarea:focus,
+.tutorial-form select:focus {
+  border-color: #00eaff;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+  outline: none;
+}
+
+.btn-submit {
+  background-color: #00eaff;
+  color: #ffffff;
+  font-weight: bold;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+  background-color: #00c6e0;
+}
+
+.mensaje {
+  margin-top: 1rem;
+  text-align: center;
+  font-style: italic;
+  color: #4cd2ff;
+}
+
+.tutorial-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 2rem;
+}
+
+.tutorial-item {
+  background: rgba(0, 20, 40, 0.8);
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  border-radius: 10px;
+  padding: 1rem;
+  color: #d0f7ff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.3s ease;
+}
+
+.tutorial-item:hover {
+  background: rgba(0, 240, 255, 0.1);
+}
+
+.actions button {
+  background: linear-gradient(123deg lightblue 45%, 34deg darkblue);
+  border: none;
+  color: #ffffff;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 1rem;
+  transition: color 0.3s;
+}
+
+.actions button:hover {
+  color: #fff;
+}
+
+.Eliminarbtn {
+  background: rgba(255, 0, 0, 0.477) !important;
+  border: none;
+  color: #ffffff !important;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 1rem;
+  transition: color 0.3s;
+}
+
+
+.Eliminarbtn:hover {
+  background: rgba(252, 0, 0, 0.922) !important;
+  border: 3px red !important;
+  color: #ffffff !important;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 1rem;
+  transition: color 0.3s;
+  box-shadow: 3px red !important;
+}

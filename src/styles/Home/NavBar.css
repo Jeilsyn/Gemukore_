@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   padding: 0 2rem;
-  height: 8vh;
+  height: 10vh;
   font-family: 'Orbitron', sans-serif;
 }
 
@@ -99,7 +99,6 @@
   background-color: #005f99;
 }
 
-/* Texto info (como thomcoins) */
 .nav-info {
   font-weight: 600;
   font-size: 0.9rem;
@@ -116,7 +115,7 @@
 .navbar a {
   text-decoration: none;
   color: inherit;
-  padding: 4px 10px; /* padding más ajustado */
+  padding: 4px 10px; 
   border-radius: 6px;
   transition: color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
 }
@@ -217,7 +216,6 @@
   }
 }
 
-/* Botón hamburguesa oculto por defecto */
 .hamburger-menu {
   display: none;
   flex-direction: column;
@@ -229,7 +227,17 @@
   cursor: pointer;
   padding: 0;
   z-index: 1200;
+  margin-left: 60%;
+  margin-right:5%;
 }
+
+
+.botonDiv{
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+}
+
 
 .hamburger-menu span {
   width: 14px;
@@ -241,7 +249,6 @@
   transform-origin: 1px;
 }
 
-/* Animación al abrir/cerrar menú */
 .hamburger-menu.open span:nth-child(1) {
   transform: rotate(45deg);
 }
@@ -258,10 +265,10 @@
 /* Responsive para móviles */
 @media (max-width: 768px) {
   .nav-list {
-    display: none; /* ocultamos menú por defecto */
+    display: none;
     flex-direction: column;
     position: absolute;
-    top: 48px; /* justo debajo del header */
+    top: 48px; 
     right: 0;
     background: #06172f;
     width: 180px;
@@ -289,4 +296,7 @@
   .hamburger-menu {
     display: flex;
   }
+
+
+  
 }

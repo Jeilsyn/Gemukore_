@@ -11,6 +11,7 @@ import {
 } from "../animations/animation.js";
 import "../../styles/Auth/Loggin.css";
 
+//Manejo de Login 
 const LoginForm = () => {
   const user = useUser();
   const [email, setEmail] = useState("");
@@ -26,6 +27,7 @@ const LoginForm = () => {
 
     try {
       await user.login(email, password);
+      //Esta parte es irrelevante, se redirigue directamente a dentro de la app 
       setValid("¡Inicio de sesión exitoso! Redirigiendo...");
     } catch (err) {
       setError(err.message || "Credenciales incorrectas. Intenta de nuevo.");
@@ -34,6 +36,7 @@ const LoginForm = () => {
     }
   };
 
+  //Comproboaciones al realizar el envío
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -47,10 +50,12 @@ const LoginForm = () => {
       return;
     }
 
+    //por ultimo si todo bien directamente se hace el login del usuario 
     handleLogin();
   };
 
   return (
+    //Aplicación de los motions de animations.js
     <motion.form
       onSubmit={handleSubmit}
       noValidate

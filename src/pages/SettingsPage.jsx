@@ -4,8 +4,8 @@ import SettingsGame from '../components/settings/SettingsGames'
 
 export default function SettingsPage() {
     return (
-        <div> <Settings />
-            <SettingsGame /></div>
+        <> <Settings />
+            <SettingsGame /></>
 
 
     )

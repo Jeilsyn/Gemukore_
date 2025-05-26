@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useUser } from "../../context/AuthContext";
+//Uso componentes reutilizables en casi todos los archivos de componentes para no repetirlos 
 import Input from "../ui/Input";
 import Button from "../ui/Button.jsx";
 import { motion } from "framer-motion";
@@ -11,6 +12,7 @@ import {
 } from "../animations/animation.js";
 import "../../styles/Auth/Register.css";
 
+//Manejo de Registro 
 const RegisterForm = () => {
   const { register } = useUser();
   const [form, setForm] = useState({
@@ -19,21 +21,24 @@ const RegisterForm = () => {
     password: "",
     confirmPassword: "",
   });
-  const [valid, setValid] = useState(null);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [valid, setValid] = useState(null);//manejar si es valido, es decir si tiene exito
+  const [error, setError] = useState(null);//manejar si es erroneo, es decir si no tiene exito
+  const [loading, setLoading] = useState(false);//si esta procesando el registro 
 
+  //Resetear el error o validacion , actualiza el form en funcion del id 
   const handleChange = (e) => {
     setError(null);
     setValid(null);
     setForm({ ...form, [e.target.id]: e.target.value });
   };
 
+  //Llama a la función de register de Appwrite
   const handleRegister = async (e) => {
     e.preventDefault();
     setValid(null);
     setError(null);
 
+    //Comprobación de los datos 
     if (form.password !== form.confirmPassword) {
       setError("Las contraseñas no coinciden.");
       return;
@@ -53,6 +58,7 @@ const RegisterForm = () => {
     setLoading(true);
     try {
       await register(form.email, form.password, form.username);
+
       setValid("Registro exitoso! Redirigiendo...");
     } catch (err) {
       setError(err.message || "Error en el registro.");
@@ -62,85 +68,86 @@ const RegisterForm = () => {
   };
 
   return (
-<motion.form
-  onSubmit={handleRegister}
-  noValidate
-  className="register-form"
-  {...fadeInForm}
->
-  <motion.div {...slideInInput(0.1)}>
-    <Input
-      id="username"
-      label="Nombre de usuario"
-      value={form.username}
-      onChange={handleChange}
-      disabled={loading}
-    />
-  </motion.div>
-
-  <motion.div {...slideInInput(0.2)}>
-    <Input
-      id="email"
-      label="Correo electrónico"
-      type="email"
-      value={form.email}
-      onChange={handleChange}
-      disabled={loading}
-    />
-  </motion.div>
-
-  <motion.div {...slideInInput(0.3)}>
-    <Input
-      id="password"
-      label="Contraseña"
-      type="password"
-      value={form.password}
-      onChange={handleChange}
-      disabled={loading}
-    />
-  </motion.div>
-
-  <motion.div {...slideInInput(0.4)}>
-    <Input
-      id="confirmPassword"
-      label="Confirmar contraseña"
-      type="password"
-      value={form.confirmPassword}
-      onChange={handleChange}
-      disabled={loading}
-    />
-  </motion.div>
-
-  {valid && (
-    <motion.div
-      className="register-success-message"
-      role="status"
-      {...scaleInMessage(0.5)}
+    //Aplicación de las animaciones y formulario 
+    <motion.form
+      onSubmit={handleRegister}
+      noValidate
+      className="register-form"
+      {...fadeInForm}
     >
-      {valid}
-    </motion.div>
-  )}
+      <motion.div {...slideInInput(0.1)}>
+        <Input
+          id="username"
+          label="Nombre de usuario"
+          value={form.username}
+          onChange={handleChange}
+          disabled={loading}
+        />
+      </motion.div>
 
-  {error && (
-    <motion.div
-      className="register-error-message"
-      role="alert"
-      {...scaleInMessage(0.6)}
-    >
-      {error}
-    </motion.div>
-  )}
+      <motion.div {...slideInInput(0.2)}>
+        <Input
+          id="email"
+          label="Correo electrónico"
+          type="email"
+          value={form.email}
+          onChange={handleChange}
+          disabled={loading}
+        />
+      </motion.div>
 
-  <motion.div className="form-link" {...slideInInput(0.6)}>
-    ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
-  </motion.div>
+      <motion.div {...slideInInput(0.3)}>
+        <Input
+          id="password"
+          label="Contraseña"
+          type="password"
+          value={form.password}
+          onChange={handleChange}
+          disabled={loading}
+        />
+      </motion.div>
 
-  <motion.div className="register-button-container" {...slideInInput(0.7)}>
-    <Button type="submit" className="register-button" disabled={loading}>
-      {loading ? "Registrando..." : "Registrar"}
-    </Button>
-  </motion.div>
-</motion.form>
+      <motion.div {...slideInInput(0.4)}>
+        <Input
+          id="confirmPassword"
+          label="Confirmar contraseña"
+          type="password"
+          value={form.confirmPassword}
+          onChange={handleChange}
+          disabled={loading}
+        />
+      </motion.div>
+
+      {valid && (
+        <motion.div
+          className="register-success-message"
+          role="status"
+          {...scaleInMessage(0.5)}
+        >
+          {valid}
+        </motion.div>
+      )}
+
+      {error && (
+        <motion.div
+          className="register-error-message"
+          role="alert"
+          {...scaleInMessage(0.6)}
+        >
+          {error}
+        </motion.div>
+      )}
+
+      <motion.div className="form-link" {...slideInInput(0.6)}>
+        ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
+      </motion.div>
+
+      <motion.div className="register-button-container" {...slideInInput(0.7)}>
+        <Button type="submit" className="register-button" disabled={loading}>
+          {loading ? "Registrando..." : "Registrar"}
+        </Button>
+      </motion.div>
+    </motion.form>
   );
 };
 

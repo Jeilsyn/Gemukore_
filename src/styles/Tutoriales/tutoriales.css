@@ -134,19 +134,19 @@
 }
 
 .back-button {
-  width: 1rem!important;       /* ancho pequeño */
-  height: 2rem;      /* altura igual para que sea un círculo */
+  width: 1rem!important;       
+  height: 2rem;     
   margin-bottom: 1rem;
   background-color: #e5e7eb;
   border-radius: 5%;
-  border: none;      /* quitar borde si tiene */
+  border: none;     
   cursor: pointer;
-  display: flex;     /* centrar contenido */
+  display: flex;    
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem; /* tamaño texto o icono */
+  font-size: 1.2rem; 
   transition: background-color 0.2s ease;
-  padding: 0;        /* quitar padding */
+  padding: 0;        
 }
 
 .back-button:hover {

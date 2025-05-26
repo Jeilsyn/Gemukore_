@@ -17,7 +17,7 @@
   text-shadow: 0 0 10px #00e0ff;
 }
 
-/* Imagen perfil al principio */
+
 .image-preview {
   display: flex;
   justify-content: center;
@@ -33,7 +33,6 @@
   box-shadow: 0 0 15px #00f0ffaa;
 }
 
-/* Formulario */
 form {
   display: flex;
   flex-direction: column;
@@ -142,7 +141,6 @@ button:disabled {
 }
 
 
-/* Modal (simple) */
 .modal-actions {
   margin-top: 1.5rem;
   display: flex;
@@ -197,5 +195,4 @@ input[type="file"].form-input {
   color: #eee;
 }
 
-/*settings game*/
 

@@ -1,7 +1,5 @@
-// src/components/ui/Modal.jsx
 import React from "react";
-/* import "./Modal.css"; // Estilos separados, abajo te los dejo
- */
+
 const Modal = ({ onClose, children }) => {
   return (
     <div className="modal-overlay">

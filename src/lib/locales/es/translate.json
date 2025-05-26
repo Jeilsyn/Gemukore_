@@ -152,29 +152,35 @@
             "getProfile": "Error obteniendo perfil"
         }
     },
-    "settingsGame": {
-        "title": "Gestion de perfil de Videojuego",
-        "username": "Nombre de usuario",
-        "yourGames": "Tus Videojuegos",
-        "loadingGames": "Cargando tus juegos...",
-        "noGames": "No tienes juegos añadidos aún.",
-        "level": "Nivel",
-        "nickname": "Nickname",
-        "role": "Rol",
-        "delete": "Eliminar",
-        "addGame": "Añadir Nuevo Juego",
-        "editNickname": "Editar Nickname y roles",
-        "saveChanges": "Guardar cambios",
-        "profileUpdated": "Perfil actualizado correctamente",
-        "gameDeleted": "Juego eliminado correctamente",
-        "confirmDelete": "¿Estás seguro de que quieres eliminar este juego de tu perfil?",
-        "errors": {
-            "invalidImage": "Por favor selecciona un archivo de imagen válido",
-            "imageTooLarge": "La imagen es demasiado grande (máx. 5MB)",
-            "deleteError": "Error eliminando juego",
-            "deleteFailed": "Error al eliminar el juego",
-            "updateError": "Error actualizando perfil",
-            "updateFailed": "Error al actualizar perfil"
-        }
+    
+  "settingsGame": {
+    "title": "Configuración de Juegos",
+    "username": "Nombre de usuario",
+    "yourGames": "Tus Videojuegos",
+    "loadingGames": "Cargando tus juegos...",
+    "noGames": "No tienes juegos añadidos aún.",
+    "level": "Nivel",
+    "nickname": "Nickname",
+    "role": "Rol",
+    "delete": "Eliminar",
+    "addGame": "Añadir Nuevo Juego",
+    "editNickname": "Editar Nickname y roles",
+    "saveChanges": "Guardar cambios",
+    "profileUpdated": "Perfil actualizado correctamente",
+    "gameDeleted": "Juego eliminado correctamente",
+    "confirmDelete": "¿Estás seguro de que quieres eliminar este juego de tu perfil?",
+    "errors": {
+      "invalidImage": "Por favor selecciona un archivo de imagen válido",
+      "imageTooLarge": "La imagen es demasiado grande (máx. 5MB)",
+      "deleteError": "Error eliminando juego",
+      "deleteFailed": "Error al eliminar el juego",
+      "updateError": "Error actualizando perfil",
+      "updateFailed": "Error al actualizar perfil",
+      "loadGamesError": "Error cargando juegos"
     }
+  }
+  
+  
+  
 }
+    

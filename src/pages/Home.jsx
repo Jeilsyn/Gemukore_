@@ -1,4 +1,3 @@
-// Home.tsx
 import { motion } from "framer-motion";
 import { fadeInContainer, slideInTitle } from "../components/animations/animation";
 import "../styles/Home/home.css";

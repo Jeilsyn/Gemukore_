@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { account } from '../../lib/services/appwrite/appwriteClient';
+import { account } from '../../lib/services/appwrite/appwriteClient';// usuario actual de appwrite
 import {
   getAllUsers,
   getUserGamesPreferencesWithNames,
@@ -12,19 +12,20 @@ import { useTranslation } from 'react-i18next';
 import "../../styles/Match/match.css";
 import { cardVariants } from '../animations/animation.js';
 
+// El emparejamiento entre usuarios, 
 export default function Matches() {
-  const { t } = useTranslation();
-  const [candidates, setCandidates] = useState([]);
+  const { t } = useTranslation();//traduccion 
+  const [candidates, setCandidates] = useState([]);//usuarios que ves y decidir si hacer Gemu(Match) o no 
   const [index, setIndex] = useState(0);
-  const [prefs, setPrefs] = useState([]);
+  const [prefs, setPrefs] = useState([]);//preferencias del usuario 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [direction, setDirection] = useState(1); // 1 forward, -1 backward
-
+  const [direction, setDirection] = useState(1); 
   
   
 
   useEffect(() => {
+    //Cargar los usuarios al montarse el componente 
     const loadCandidates = async () => {
       setIsLoading(true);
       setError(null);
@@ -45,6 +46,7 @@ export default function Matches() {
   }, [t]);
 
   useEffect(() => {
+    //Cargar las preferencias del usuario al montarse el componente 
     const loadPreferences = async () => {
       if (candidates[index]?.$id) {
         try {
@@ -60,6 +62,7 @@ export default function Matches() {
     loadPreferences();
   }, [candidates, index, t]);
 
+  //Las acciones a realizar  para el Skip o el Gemu (sirve para ver si está cargando, ejecutando la accion, moviendos eal siguiente match y también la he usado para depurar )
   const handleAction = async (actionFn) => {
     try {
       setIsLoading(true);
@@ -74,6 +77,7 @@ export default function Matches() {
     }
   };
 
+  //Manejar el match 
   const handleMatch = () => handleAction(async () => {
     const currentUser = await account.get();
     if (!currentUser?.$id) throw new Error(t('matches.errors.notAuthenticated'));
@@ -82,6 +86,7 @@ export default function Matches() {
     await createLike(currentUser.$id, other.$id, 'pendiente_receptor');
   });
 
+  //Manjear el skip 
   const handleSkip = () => handleAction(async () => {
     const currentUser = await account.get();
     if (!currentUser?.$id) throw new Error(t('matches.errors.notAuthenticated'));
@@ -90,10 +95,12 @@ export default function Matches() {
     await skipUser(currentUser.$id, other.$id);
   });
 
+  //Moverse de usuario a otro
   const nextCandidate = () => {
     setIndex(prevIndex => (prevIndex + 1 < candidates.length ? prevIndex + 1 : 0));
   };
 
+  //Si carga muestra la animacion 
   if (isLoading && candidates.length === 0) {
     return (
       <div className="loading-container">
@@ -103,6 +110,7 @@ export default function Matches() {
     );
   }
 
+  //Si hay error muestra esto junto a un boton de recarga 
   if (error) {
     return (
       <div className="error-container">
@@ -114,6 +122,7 @@ export default function Matches() {
     );
   }
 
+  //Sin usuarios para hacer match muestro que no hay candidatos 
   if (candidates.length === 0) {
     return (
       <div className="no-candidates">
@@ -122,9 +131,11 @@ export default function Matches() {
     );
   }
 
+  //Obtener el usuario actual 
   const user = candidates[index];
 
   return (
+    //Animación de la tarjeta del perfil para la entrada y salida de la tarjeta con desplazamiento horizontal 
     <>
   <h2 className="match-title">{t('matches.title')}</h2>
   <div className="matches-container">

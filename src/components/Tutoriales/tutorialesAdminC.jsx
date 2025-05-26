@@ -7,6 +7,8 @@ import {
   getAllVideoGames,
 } from '../../lib/services/appwrite/collections';
 import { account } from '../../lib/services/appwrite/appwriteClient';
+import { motion } from 'framer-motion';
+import "../../styles/Tutoriales/tutorialesF.css";
 
 const initialState = {
   titulo: '',
@@ -29,6 +31,11 @@ const AdminTutorialForm = () => {
   const [videojuegos, setVideojuegos] = useState([]);
   const [mensaje, setMensaje] = useState('');
 
+  useEffect(() => {
+    loadTutoriales();
+    loadVideojuegos();
+  }, []);
+
   const loadTutoriales = async () => {
     const data = await getAllTutorials();
     setTutoriales(data);
@@ -42,11 +49,6 @@ const AdminTutorialForm = () => {
       console.error('Error cargando videojuegos:', error);
     }
   };
-
-  useEffect(() => {
-    loadTutoriales();
-    loadVideojuegos();
-  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -64,10 +66,10 @@ const AdminTutorialForm = () => {
 
       if (editingId) {
         await updateTutorial(editingId, tutorialData);
-        setMensaje('✅ Tutorial actualizado.');
+        setMensaje(' Tutorial actualizado.');
       } else {
         await createTutorial(tutorialData);
-        setMensaje('✅ Tutorial creado.');
+        setMensaje(' Tutorial creado.');
       }
 
       setForm(initialState);
@@ -75,59 +77,62 @@ const AdminTutorialForm = () => {
       loadTutoriales();
     } catch (error) {
       console.error(error);
-      setMensaje('❌ Error al guardar el tutorial.');
+      setMensaje(' Error al guardar el tutorial.');
     }
   };
 
   const handleEdit = (tutorial) => {
+    console.log("Tutorial para editar:", tutorial);
     setForm({
       titulo: tutorial.titulo,
       Contenido: tutorial.Contenido,
       nivel_recomendado: tutorial.nivel_recomendado,
       url_video: tutorial.url_video,
-      videojuego_id: tutorial.videojuego_id,
+      videojuego_id: tutorial.videojuego_id ? tutorial.videojuego_id.$id : '',
     });
     setEditingId(tutorial.$id);
   };
-
   const handleDelete = async (id) => {
     if (window.confirm('¿Estás seguro de eliminar este tutorial?')) {
       await deleteTutorial(id);
-      setMensaje('🗑️ Tutorial eliminado.');
+      setMensaje(' Tutorial eliminado.');
       loadTutoriales();
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">{editingId ? 'Editar' : 'Crear'} Tutorial</h2>
+    <motion.div
+      className="tutorial-form-container"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      <h2>{editingId ? 'Editar' : 'Crear'} Tutorial</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <input
+      <form onSubmit={handleSubmit} className="tutorial-form">
+        <motion.input
           name="titulo"
           placeholder="Título"
           value={form.titulo}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
           required
+          whileFocus={{ scale: 1.02 }}
         />
-        <textarea
+        <motion.textarea
           name="Contenido"
           placeholder="Contenido"
           value={form.Contenido}
           onChange={handleChange}
           rows={4}
-          className="w-full p-2 border rounded"
           required
+          whileFocus={{ scale: 1.02 }}
         />
 
-        {/* Select para nivel recomendado */}
-        <label className="block text-sm font-medium text-gray-700">Nivel recomendado</label>
+        <label>Nivel recomendado</label>
         <select
           name="nivel_recomendado"
           value={form.nivel_recomendado}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
           required
         >
           <option value="" disabled>Selecciona un nivel</option>
@@ -143,20 +148,16 @@ const AdminTutorialForm = () => {
           placeholder="URL del video"
           value={form.url_video}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
           required
         />
 
-        {/* Select para videojuego */}
-        <label className="block text-sm font-medium text-gray-700">Videojuego</label>
+        <label>Videojuego</label>
         <select
           name="videojuego_id"
           value={form.videojuego_id}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
-          required
         >
-          <option value="" disabled>Selecciona un videojuego</option>
+          <option value="">Selecciona un videojuego</option>
           {videojuegos.map((juego) => (
             <option key={juego.$id} value={juego.$id}>
               {juego.nombre}
@@ -164,44 +165,53 @@ const AdminTutorialForm = () => {
           ))}
         </select>
 
-        <button
+        <motion.button
           type="submit"
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          className="btn-submit"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           {editingId ? 'Actualizar' : 'Crear'} Tutorial
-        </button>
+        </motion.button>
       </form>
 
-      {mensaje && <p className="mt-3 text-sm text-blue-700">{mensaje}</p>}
+      {mensaje && <p className="mensaje">{mensaje}</p>}
 
-      <hr className="my-6" />
+      <hr />
 
-      <h3 className="text-xl font-semibold mb-2">Tutoriales existentes</h3>
-      <ul className="space-y-2">
+      <h3>Tutoriales existentes</h3>
+      <motion.ul
+        className="tutorial-list"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          visible: {
+            transition: {
+              staggerChildren: 0.1
+            }
+          }
+        }}
+      >
         {tutoriales.map((t) => (
-          <li key={t.$id} className="p-3 border rounded flex justify-between items-center">
+          <motion.li
+            key={t.$id}
+            className="tutorial-item"
+            variants={{
+              hidden: { opacity: 0, y: 10 },
+              visible: { opacity: 1, y: 0 }
+            }}
+          >
             <div>
-              <strong>{t.titulo}</strong> — Nivel:{' '}
-              {nivelesRecomendados.find(n => n.value === t.nivel_recomendado)?.label || t.nivel_recomendado}
+              <strong>{t.titulo}</strong> — Nivel: {nivelesRecomendados.find(n => n.value === t.nivel_recomendado)?.label || t.nivel_recomendado}
             </div>
-            <div className="space-x-2">
-              <button
-                onClick={() => handleEdit(t)}
-                className="text-blue-600 hover:underline"
-              >
-                Editar
-              </button>
-              <button
-                onClick={() => handleDelete(t.$id)}
-                className="text-red-600 hover:underline"
-              >
-                Eliminar
-              </button>
+            <div className="actions">
+              <button onClick={() => handleEdit(t)}> Editar</button>
+              <button className="Eliminarbtn" onClick={() => handleDelete(t.$id)}> Eliminar</button>
             </div>
-          </li>
+          </motion.li>
         ))}
-      </ul>
-    </div>
+      </motion.ul>
+    </motion.div>
   );
 };
 

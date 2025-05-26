@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import consejosJuegos from '../../data/consejos.json'; // Asegúrate de que la ruta sea correcta
+import consejosJuegos from '../../data/consejos.json'; 
 import { useLocation } from 'react-router-dom';
 
 const LoadingPage = () => {
@@ -10,7 +10,8 @@ const LoadingPage = () => {
     const [consejo, setConsejo] = useState(null);
     const location = useLocation();
     useEffect(() => {
-        // Elegir consejo aleatorio del JSON
+
+        //Se escoge de forma aleatoria los consejos de los loading screen
         const random = Math.floor(Math.random() * consejosJuegos.length);
         setConsejo(consejosJuegos[random]);
 
@@ -22,12 +23,13 @@ const LoadingPage = () => {
             return;
         }
 
+        //Tiempo que tardara el loading screen
         const timer = setTimeout(() => {
             setIsVisible(false);
             setTimeout(() => {
                 localStorage.removeItem('alreadyReloaded');
 
-                // Redirige según el origen
+                // Redirige según el origen de donde este el usuario 
                 if (location.state?.from === 'crearPerfil') {
                     navigate('/CrearPrefJuegos');
                 } else{
@@ -40,6 +42,7 @@ const LoadingPage = () => {
     }, [navigate]);
 
     return (
+        //Animación de la página
         <AnimatePresence>
             {isVisible && (
                 <motion.div
@@ -78,6 +81,7 @@ const LoadingPage = () => {
     );
 };
 
+//El estilo para aplicarlo directamente sin importarlo 
 const styles = {
     container: {
         background: '#0d0d0d',

@@ -108,7 +108,6 @@ const CrearPerfil = () => {
         descripcion: form.descripcion,
         thomcoins: 2500,
         nivel_jugador: form.nivel_jugador,
-        tema_app: form.tema_app,
         text_size: parseInt(form.text_size),
         idioma: form.idioma,
         foto_perfil_url: imageUrl || "",
@@ -146,14 +145,8 @@ const CrearPerfil = () => {
           </select>
         </div>
 
-        <div className="form-group">
-          <label>Tema de la Aplicación</label>
-          <select name="tema_app" value={form.tema_app} onChange={handleSelectChange}>
-            <option value="claro">Claro</option>
-            <option value="oscuro">Oscuro</option>
-            <option value="contraste">Contraste</option>
-          </select>
-        </div>
+        
+         
 
         <div className="form-group">
           <label>Tamaño de Texto</label>

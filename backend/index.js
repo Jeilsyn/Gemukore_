@@ -18,14 +18,15 @@ app.use(express.json());
 
 // Configuración de Appwrite 
 const client = new Client()
-  .setEndpoint("https://fra.cloud.appwrite.io/v1")
-  .setProject("680e27de001ffc71f5a7")
-  .setKey("standard_dc04ffd421eb1b1fb48742f8a808d8884e9cbad6f960764b58870793532c23bb8d76ca6fb64a816b5a32f19d8c46095d73d9e74a9f879f38f4844314fe6bb1fd02857e60cbcea3e9a95b06551ac1af659b70cf080540a0f66b331ce6dd123ef87e85ef0eead2632171e69625d2013970821637baf847a24916d276dd87bd7f3e"); // ¡NO USES LA KEY QUE PUBLICASTE ANTES!
+  .setEndpoint(process.env.APPWRITE_ENDPOINT)
+  .setProject(process.env.APPWRITE_PROJECT_ID)
+  .setKey(process.env.APPWRITE_API_KEY); 
 
 const users = new Users(client);
 
+
 // Endpoint  para eliminar usuarios
-app.post("/eliminar-usuario", async (req, res) => {
+app.post("/api/eliminar-usuario", async (req, res) => {
   try {
     const { userId } = req.body;
     
@@ -51,7 +52,7 @@ app.post("/eliminar-usuario", async (req, res) => {
 });
 
 
-app.post("/bloquear", async (req, res) => {
+app.post("/api/bloquear", async (req, res) => {
   const { userId, block } = req.body;
 
   const response = await fetch(`https://fra.cloud.appwrite.io/v1/users/${userId}/status`, {

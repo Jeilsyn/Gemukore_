@@ -1,4 +1,3 @@
-// components/ui/Input.jsx
 const Input = ({ label, name, type, value, onChange, placeholder, required }) => {
     return (
       <div className="input-group">

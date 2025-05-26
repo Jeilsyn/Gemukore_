@@ -1,4 +1,5 @@
-// animations.ts
+//Archivo de animaciones de framer-motion
+
 export const fadeInContainer = {
   initial: { opacity: 0 },
   animate: { opacity: 1 },
@@ -10,7 +11,6 @@ export const slideInTitle = {
   animate: { y: 0 },
   transition: { type: "spring", stiffness: 100 },
 };
-// animations.ts
 export const fadeInNav = {
   initial: { opacity: 0, y: -20 },
   animate: { opacity: 1, y: 0 },
@@ -18,7 +18,6 @@ export const fadeInNav = {
 };
 
 
-// animations/animation.js
 export const coolGameEntrance = {
   initial: {
     y: -100,
@@ -52,7 +51,6 @@ export const coolGameEntrance = {
 };
 
 
-// animations/animation.js
 export const fadeInNav2 = {
   initial: {
     opacity: 0,
@@ -84,7 +82,6 @@ export const fadeInNav2 = {
 
 
 //Loggin
-// Animaciones para LoginForm
 
 export const fadeInForm = {
   initial: { opacity: 0, y: 50 },
@@ -104,6 +101,7 @@ export const scaleInMessage = (delay = 0.6) => ({
   transition: { delay, duration: 0.3 },
 });
 
+
 //Crear perfil 
 export const containerVariant = {
   hidden: { opacity: 0 },
@@ -121,7 +119,7 @@ export const modalAnimation = {
 };
 
 //Busqueda de videojeugos 
-// utils/motionVariants.js
+
 export const fadeInUp = {
   initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0 },
@@ -141,7 +139,6 @@ export const scaleFadeIn = {
 };
 
 
-//export const pageVariants = {
 
 
 export const pageTransition = {
@@ -150,9 +147,9 @@ export const pageTransition = {
   duration: 0.5
 };
 
-// Card animation
+// Animación de las cartas
 
-// List item animation
+// 
 export const listItemVariants = {
   hidden: { opacity: 0, x: -20 },
   visible: (i) => ({
@@ -165,26 +162,25 @@ export const listItemVariants = {
   })
 };
 
-// Page transition
+
 export const pageVariants = {
   initial: { opacity: 0, y: 20 },
   in: { opacity: 1, y: 0 },
   out: { opacity: 0, y: -20 }
 };
 
-// Button hover effect
 export const buttonHover2 = {
   scale: 1.05,
   transition: { type: 'spring', stiffness: 400, damping: 10 }
 };
 
-// Button tap effect
 export const buttonTap = {
   scale: 0.98
 };
 
 
 //Matches 
+
 export const cardVariants = {
     enter: (direction) => ({
       x: direction > 0 ? 500 : -500,

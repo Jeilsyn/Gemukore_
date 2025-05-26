@@ -1,0 +1,169 @@
+
+.admin-container {
+  max-width: 1000px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: rgba(0, 15, 30, 0.9);
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+  font-family: 'Orbitron', sans-serif;
+  color: #e0f7ff;
+}
+
+.admin-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  text-align: center;
+  color: #00eaff;
+  text-shadow: 0 0 6px #00f0ff;
+  margin-bottom: 2rem;
+}
+
+.users-section {
+  background: rgba(0, 20, 40, 0.95);
+  border-radius: 12px;
+  padding: 2rem;
+  border: 1px solid rgba(0, 240, 255, 0.1);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+}
+
+.users-section h2 {
+  font-size: 1.5rem;
+  color: #4cd2ff;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 0 4px #00f0ff;
+}
+
+.success-message {
+  background-color: rgba(40, 80, 60, 0.8);
+  color: #00ffcc;
+  border: 1px solid #00ffcc;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  box-shadow: 0 0 8px #00ffcc88;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  color: #d0f7ff;
+}
+
+.users-table thead {
+  background-color: rgba(0, 240, 255, 0.1);
+  border-bottom: 1px solid #00eaff44;
+}
+
+.users-table th,
+.users-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+}
+
+.users-table th {
+  color: #00eaff;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.users-table td {
+  font-size: 0.95rem;
+}
+
+.blocked-user {
+  background-color: rgba(255, 0, 0, 0.1);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-badge.active {
+  background-color: rgba(0, 255, 170, 0.15);
+  color: #00ffaa;
+  border: 1px solid #00ffaa55;
+}
+
+.status-badge.blocked {
+  background-color: rgba(255, 0, 0, 0.2);
+  color: #ff4c4c;
+  border: 1px solid #ff4c4c55;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.delete-btn,
+.block-btn,
+.unblock-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: 'Orbitron', sans-serif;
+  transition: all 0.3s ease;
+  color: #fff;
+}
+
+.delete-btn {
+  background: rgba(255, 0, 0, 0.6);
+  border: 1px solid #ff0000aa;
+  box-shadow: 0 0 6px #ff0000aa;
+}
+
+.delete-btn:hover {
+  background: rgba(255, 0, 0, 0.9)!important;
+  box-shadow: 0 0 10px #ff0000cc!important;
+}
+
+.block-btn {
+  background: rgba(255, 170, 0, 0.6);
+  border: 1px solid #ffaa00aa;
+  box-shadow: 0 0 6px #ffaa00aa;
+  color: #000;
+}
+
+.block-btn:hover {
+  background: rgba(255, 170, 0, 0.9);
+  box-shadow: 0 0 10px #ffaa00cc;
+}
+
+.unblock-btn {
+  background: rgba(0, 255, 170, 0.6);
+  border: 1px solid #00ffaaaa;
+  box-shadow: 0 0 6px #00ffaaaa;
+}
+
+.unblock-btn:hover {
+  background: rgba(255, 89, 0, 0.9);
+  box-shadow: 0 0 10px #00ffaacc;
+}
+
+@media (max-width: 768px) {
+  .actions-cell {
+    flex-direction: column;
+  }
+
+  .users-table th,
+  .users-table td {
+    padding: 0.5rem;
+  }
+}

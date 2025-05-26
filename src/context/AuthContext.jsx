@@ -25,8 +25,8 @@ export function UserProvider(props) {
         try {
           const profile = await getUserProfile(loggedIn.$id);
           if (profile) {
-            await bonificarSiCorresponde(loggedIn.$id); // 💥 Bonificación
-            // Refrescar los datos del perfil después de la bonificación
+            await bonificarSiCorresponde(loggedIn.$id); //  Bonificación
+           
             const updatedProfile = await getUserProfile(loggedIn.$id); // Obtener perfil actualizado
             setUser((prevState) => ({
               ...prevState,
@@ -59,10 +59,10 @@ export function UserProvider(props) {
           thomcoins: profile.thomcoins + 2500,
           ultima_bonificacion: now.toISOString()
         });
-        console.log(`💰 Bonificación aplicada a ${userId}.`);
+        console.log(` Bonificación aplicada a ${userId}.`);
       }
     } catch (error) {
-      console.error("❌ Error al aplicar bonificación:", error);
+      console.error(" Error al aplicar bonificación:", error);
     }
   }
   async function logout() {

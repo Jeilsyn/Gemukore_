@@ -8,8 +8,8 @@ import SettingsPage from '../../pages/SettingsPage';
 import LoadingPage from '../../pages/loadingPage'
 
 import LoadingPageRemain from '../animations/LoadingScreenRemain';
-import Matches from '../../pages/Match'; // Nuevo import
-import Requests from '../../pages/MatchRequests'; // Nuevo import
+import Matches from '../../pages/Match';
+import Requests from '../../pages/MatchRequests'; 
 import GameBoard from '../../pages/GameBoard';
 import CreateGameInfoUser from '../../pages/CreateGameInfoUser';
 import Tutoriales from '../../pages/Tutoriales';
@@ -18,7 +18,6 @@ import Tutoriales from '../../pages/Tutoriales';
 //Admin
 import TutorialesAdmin from '../../pages/TutorialesAdmin';
 import HistorialUsuariosPage from '../../pages/HistorialUsuariosPage';
-//Todas las rutas están aqui
 function AppRoutes() {
 
     return (

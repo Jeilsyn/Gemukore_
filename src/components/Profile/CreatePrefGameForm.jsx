@@ -110,14 +110,14 @@ function CreatePrefGameForm({ userId }) {
     try {
       setLoading(true);
       await createUserGamesProfile(profileData);
-      setFormMessage('✅ Juego añadido correctamente.');
+      setFormMessage('Juego añadido correctamente.');
       setMessageType('success');
       setTimeout(() => {
         navigate("/createGameInfoUser");
       }, 1500);
     } catch (err) {
       console.error('Error al guardar:', err);
-      setFormMessage(`❌ Error al añadir juego: ${err.message}`);
+      setFormMessage(` Error al añadir juego: ${err.message}`);
       setMessageType('error');
     } finally {
       setLoading(false);

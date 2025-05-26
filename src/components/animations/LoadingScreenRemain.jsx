@@ -2,15 +2,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import consejosJuegos from '../../data/consejos.json'; // Asegúrate de que la ruta sea correcta
-import { useLocation } from 'react-router-dom';
 
+//Esta página de loading la he creado solo para settings para que haga el loading pero se mantenga en settings cuando se guarde la información 
 const LoadingPageRemain = () => {
     const navigate = useNavigate();
     const [isVisible, setIsVisible] = useState(true);
     const [consejo, setConsejo] = useState(null);
-    const location = useLocation();
     useEffect(() => {
-        // Elegir consejo aleatorio del JSON
+        //Escoger de forma aleatoria 
         const random = Math.floor(Math.random() * consejosJuegos.length);
         setConsejo(consejosJuegos[random]);
 

@@ -86,7 +86,7 @@ const TutorialesC = ({ userId }) => {
                 <iframe
                   src={selectedTutorial.url_video.replace("watch?v=", "embed/")}
                   title={t('tutorials.videoTitle')}
-                  frameBorder="0"
+                  
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 ></iframe>

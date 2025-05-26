@@ -48,7 +48,6 @@ export default function Settings() {
           nombre_usuario: response.nombre_usuario || "",
           descripcion: response.descripcion || "",
           nivel_jugador: response.nivel_jugador || "principiante",
-          tema_app: response.tema_app || "claro",
           text_size: parseInt(response.text_size) || 12,
           idioma: response.idioma || "es",
           foto_perfil_url: response.foto_perfil_url || ""
@@ -194,21 +193,7 @@ export default function Settings() {
           </select>
         </div>
 
-        <div className="input-group">
-          <label htmlFor="tema_app" style={{ fontSize: `${fontSize}px` }}>{t("configuracion.tema")}</label>
-          <select
-            id="tema_app"
-            name="tema_app"
-            value={form.tema_app}
-            onChange={handleChange}
-            className="form-input"
-            style={{ fontSize: `${fontSize}px` }}
-          >
-            <option value="claro">{t("temas.claro")}</option>
-            <option value="oscuro">{t("temas.oscuro")}</option>
-            <option value="contraste">{t("temas.contraste")}</option>
-          </select>
-        </div>
+      
 
         <div className="input-group">
           <label htmlFor="text_size" style={{ fontSize: `${fontSize}px` }}>{t("configuracion.texto")}</label>

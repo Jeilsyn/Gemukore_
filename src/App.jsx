@@ -3,7 +3,7 @@ import NavBar from "./components/NavBar.jsx";
 import { UserProvider } from "./context/AuthContext";
 import AppRoutes from "./components/routes/AppRoutes.jsx";
 import { useEffect } from 'react';
-import { fillVideojuegos, } from '../src/lib/services/appwrite/collections.js'; // tu ruta correcta
+import { fillVideojuegos, } from '../src/lib/services/appwrite/collections.js'; 
 function App() {
   /*   useEffect(() => {
       fillVideojuegos();

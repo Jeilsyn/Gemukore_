@@ -33,9 +33,8 @@
   margin: 0 0 0.3rem 0;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #ffffff; /* Cambié esto de #054bec a blanco para mejor contraste */
-  background: #1b1f33 !important; /* Color de fondo consistente con el tema */
-  padding: 0.5rem;
+  color: #ffffff;
+  background: #1b1f33 !important; 
   border-radius: 6px;
   width: 100%;
 }

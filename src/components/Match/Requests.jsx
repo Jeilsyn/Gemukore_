@@ -13,15 +13,17 @@ import { useTranslation } from 'react-i18next';
 import "../../styles/Match/match.css";
 import { cardVariants } from '../animations/animation.js';
 
+//Manejo de las solicitudes de los usuarios 
 export default function Requests() {
   const { t } = useTranslation();
-  const [pending, setPending] = useState([]);
-  const [profiles, setProfiles] = useState({});
-  const [prefsMap, setPrefsMap] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
+  const [pending, setPending] = useState([]);//likes pendientes
+  const [profiles, setProfiles] = useState({});//datos del usurio del like 
+  const [prefsMap, setPrefsMap] = useState({});//Preferencias del usuario 
+  const [isLoading, setIsLoading] = useState(true);// Cargando datos
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    //cargar las solicitudes pendientes al montarse el componente , consigue usuario actual, carga los likes pendientes,  y por cada like carga el perfil del emisor y sus preferencias de juegos , y guarda los datos
     async function loadPending() {
       setIsLoading(true);
       setError(null);
@@ -57,6 +59,7 @@ export default function Requests() {
     loadPending();
   }, [t]);
 
+  //para aceptar o rechazar 
   const handleDecision = async (like, decision) => {
     try {
       if (!like?.$id || !like?.emisor_id?.$id) {
@@ -83,6 +86,7 @@ export default function Requests() {
     }
   };
 
+  //Mostrar el spinner si está cargando 
   if (isLoading) {
     return (
       <div className="loading-container">
@@ -92,6 +96,7 @@ export default function Requests() {
     );
   }
 
+  //Con error mostramos ...
   if (error) {
     return (
       <div className="error-container">
@@ -103,16 +108,19 @@ export default function Requests() {
     );
   }
 
-if (pending.length === 0) {
-  return (
-    <div className="loading-container">
-      <div className="loading-spinner"></div>
-      <p>{t('requests.noRequests')}</p>
-    </div>
-  );
-}
+  //sin solicitues mostramos el mensaje 
+
+  if (pending.length === 0) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>{t('requests.noRequests')}</p>
+      </div>
+    );
+  }
 
   return (
+    //Animaciones y mostrar el perfil 
     <>
       <h2 className="match-title">{t('requests.title')}</h2>
       <div className="matches-container">

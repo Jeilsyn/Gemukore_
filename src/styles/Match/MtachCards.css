@@ -19,12 +19,12 @@
 .loading-container {
   text-align: center;
   padding: 2rem 0;
-  color: #6b7280; /* gris suave */
+  color: #6b7280; 
 }
 
 .loading-spinner {
   border: 4px solid rgba(0,0,0,0.1);
-  border-left-color: #4a90e2; /* color azul */
+  border-left-color: #4a90e2; 
   border-radius: 50%;
   width: 36px;
   height: 36px;
