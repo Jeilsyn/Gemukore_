@@ -44,7 +44,7 @@ export function UserProvider(props) {
 
       return true;
     } catch (err) {
-      throw err;
+      throw "No está registrado el usuario introducido";
     }
   }
   async function bonificarSiCorresponde(userId) {

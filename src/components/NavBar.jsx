@@ -14,7 +14,7 @@ const NavBar = () => {
   const [profile, setProfile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false); // Estado para menú hamburguesa
+  const [menuOpen, setMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const ADMIN = '682a1d8a003387bdeeb7';
@@ -47,7 +47,6 @@ const NavBar = () => {
     fetchProfile();
   }, [current, t]);
 
-  // Cerrar dropdown al clicar fuera
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -74,11 +73,10 @@ const NavBar = () => {
 
   const goToProfile = () => {
     setDropdownOpen(false);
-    setMenuOpen(false); // cerramos menú si estaba abierto
+    setMenuOpen(false);
     navigate('/settings');
   };
 
-  // Toggle menú hamburguesa
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
@@ -117,7 +115,6 @@ const NavBar = () => {
                       {t('navbar.userHistory')}
                     </Link>
                   </li>
-                  {/* Aquí NO muestro link a configuración para admin */}
                 </>
               ) : (
                 <>
@@ -142,7 +139,9 @@ const NavBar = () => {
                     </Link>
                   </li>
                  
-                  <li className="nav-info">{profile.thomcoins} {t('navbar.thomcoins')}</li>
+                  <li className="nav-info">
+                    {profile.thomcoins} {t('navbar.thomcoins')}
+                  </li>
                 </>
               )}
 
@@ -161,7 +160,6 @@ const NavBar = () => {
                       exit={{ opacity: 0, y: -10 }}
                       className="dropdown-menu"
                     >
-                      {/* Solo mostrar configuración si NO es admin */}
                       {current.$id !== ADMIN && (
                         <button className="dropdown-item" onClick={goToProfile}>
                           {t('navbar.viewProfile')}
@@ -189,7 +187,7 @@ const NavBar = () => {
         <button
           className={`hamburger-menu ${menuOpen ? 'open' : ''}`}
           onClick={toggleMenu}
-          aria-label="Toggle menu"
+          aria-label={menuOpen ? t('menu.close') : t('menu.open')}
           aria-expanded={menuOpen}
         >
           <span />

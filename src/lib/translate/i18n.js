@@ -14,15 +14,17 @@ i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    resources: {
-      es: { translation: translationES },
-      en: { translation: translationEN },
-    },
+    resources,
     fallbackLng: 'es',
-    interpolation: { escapeValue: false },
+    interpolation: { 
+      escapeValue: false 
+    },
     detection: {
       order: ['querystring', 'cookie', 'localStorage', 'navigator'],
-  caches: ['localStorage', 'cookie'],    },
+      caches: ['localStorage', 'cookie'],
+      lookupLocalStorage: 'language',
+      lookupCookie: 'i18next',
+    }
   });
 
-export default i18n
+export default i18n;

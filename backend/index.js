@@ -6,10 +6,10 @@ const app = express();
 
 // Configuración de CORS 
 const corsOptions = {
-  origin: 'http://localhost:3000', //   URL de frontend
+  origin: ['http://localhost:3000', 'https://gemukoree.netlify.app'], //   URL de frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: false, 
+  credentials: true, 
   optionsSuccessStatus: 200
 };
 

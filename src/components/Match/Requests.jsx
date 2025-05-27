@@ -13,17 +13,16 @@ import { useTranslation } from 'react-i18next';
 import "../../styles/Match/match.css";
 import { cardVariants } from '../animations/animation.js';
 
-//Manejo de las solicitudes de los usuarios 
+// Manejo de las solicitudes de los usuarios 
 export default function Requests() {
   const { t } = useTranslation();
-  const [pending, setPending] = useState([]);//likes pendientes
-  const [profiles, setProfiles] = useState({});//datos del usurio del like 
-  const [prefsMap, setPrefsMap] = useState({});//Preferencias del usuario 
-  const [isLoading, setIsLoading] = useState(true);// Cargando datos
+  const [pending, setPending] = useState([]); // likes pendientes
+  const [profiles, setProfiles] = useState({}); // datos del usuario del like 
+  const [prefsMap, setPrefsMap] = useState({}); // Preferencias del usuario 
+  const [isLoading, setIsLoading] = useState(true); // Cargando datos
   const [error, setError] = useState(null);
-
+const [isProcessing, setIsProcessing] = useState(false);
   useEffect(() => {
-    //cargar las solicitudes pendientes al montarse el componente , consigue usuario actual, carga los likes pendientes,  y por cada like carga el perfil del emisor y sus preferencias de juegos , y guarda los datos
     async function loadPending() {
       setIsLoading(true);
       setError(null);
@@ -32,9 +31,22 @@ export default function Requests() {
         if (!user?.$id) throw new Error(t('requests.errors.notAuthenticated'));
 
         const likes = await getPendingLikes(user.$id);
-        setPending(likes);
 
-        for (let like of likes) {
+        // Filtrar duplicados por emisor_id.$id
+        const uniqueLikes = [];
+        const seenEmitters = new Set();
+
+        for (const like of likes) {
+          const emitterId = like?.emisor_id?.$id;
+          if (emitterId && !seenEmitters.has(emitterId)) {
+            uniqueLikes.push(like);
+            seenEmitters.add(emitterId);
+          }
+        }
+
+        setPending(uniqueLikes);
+
+        for (let like of uniqueLikes) {
           if (!like?.emisor_id) {
             console.error(t('requests.errors.invalidLike'), like);
             continue;
@@ -56,37 +68,45 @@ export default function Requests() {
         setIsLoading(false);
       }
     }
+
     loadPending();
   }, [t]);
 
-  //para aceptar o rechazar 
-  const handleDecision = async (like, decision) => {
-    try {
-      if (!like?.$id || !like?.emisor_id?.$id) {
-        throw new Error(t('requests.errors.incompleteData'));
-      }
+const handleDecision = async (like, decision) => {
+  try {
+    if (!like?.$id || !like?.emisor_id?.$id) {
+      throw new Error(t('requests.errors.incompleteData'));
+    }
 
-      const user = await account.get();
-      if (!user?.$id) throw new Error(t('requests.errors.notAuthenticated'));
+    const user = await account.get();
+    if (!user?.$id) throw new Error(t('requests.errors.notAuthenticated'));
 
-      if (decision === 'accept') {
+    if (decision === 'accept') {
+      // Deshabilitar botones mientras se procesa
+      setIsProcessing(true);
+      
+      try {
         const matchDoc = await createMatch(like.emisor_id.$id, user.$id);
         await updateLike(like.$id, {
           estado: 'aceptado_receptor',
           match_id: matchDoc.$id
         });
-      } else {
-        await updateLike(like.$id, { estado: 'rechazado_receptor' });
+        
+        // Actualizar estado optimista
+        setPending(p => p.filter(l => l.$id !== like.$id));
+      } finally {
+        setIsProcessing(false);
       }
-
+    } else {
+      await updateLike(like.$id, { estado: 'rechazado_receptor' });
       setPending(p => p.filter(l => l.$id !== like.$id));
-    } catch (error) {
-      console.error(t('requests.errors.decisionError'), error);
-      alert(t('requests.errors.decisionAlert') + error.message);
     }
-  };
-
-  //Mostrar el spinner si está cargando 
+  } catch (error) {
+    console.error(t('requests.errors.decisionError'), error);
+    // Mostrar mensaje de error al usuario
+    setError(t('requests.errors.decisionError'));
+  }
+};
   if (isLoading) {
     return (
       <div className="loading-container">
@@ -96,7 +116,6 @@ export default function Requests() {
     );
   }
 
-  //Con error mostramos ...
   if (error) {
     return (
       <div className="error-container">
@@ -108,8 +127,6 @@ export default function Requests() {
     );
   }
 
-  //sin solicitues mostramos el mensaje 
-
   if (pending.length === 0) {
     return (
       <div className="loading-container">
@@ -120,7 +137,6 @@ export default function Requests() {
   }
 
   return (
-    //Animaciones y mostrar el perfil 
     <>
       <h2 className="match-title">{t('requests.title')}</h2>
       <div className="matches-container">
