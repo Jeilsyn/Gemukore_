@@ -16,7 +16,10 @@ import {
   buttonTap
 } from "../animations/animation";
 
+// Componente para crear el perfil de preferencias de videojuegos de un usuario
 function CreatePrefGameForm({ userId }) {
+// Estados para manejar datos del formulario y la lógica de búsqueda
+
   const [allGames, setAllGames] = useState([]);
   const [search, setSearch] = useState('');
   const [filteredGames, setFilteredGames] = useState([]);
@@ -30,6 +33,7 @@ function CreatePrefGameForm({ userId }) {
   const [messageType, setMessageType] = useState(''); // "success" | "error"
   const navigate = useNavigate();
 
+  // Estados para manejar datos del formulario y la lógica de búsqueda
   useEffect(() => {
     async function fetchData() {
       try {
@@ -46,6 +50,8 @@ function CreatePrefGameForm({ userId }) {
     fetchData();
   }, [userId]);
 
+
+    // Manejo del input de búsqueda con debounce para evitar llamadas innecesarias
   const handleSearchChange = async (e) => {
     const value = e.target.value;
     setSearch(value);
@@ -77,6 +83,7 @@ function CreatePrefGameForm({ userId }) {
     }
   };
 
+      // Seleccionar un juego de los resultados
   const handleSelectGame = (game) => {
     setSelectedGame(game);
     setSearch(game.nombre);
@@ -99,7 +106,7 @@ function CreatePrefGameForm({ userId }) {
       setMessageType('error');
       return;
     }
-
+   // Construir objeto con los datos del perfil a guardar
     const profileData = {
       usuario_id: userId,
       videojuego_id: selectedGame.$id,
@@ -139,7 +146,7 @@ function CreatePrefGameForm({ userId }) {
       return () => clearTimeout(timeout);
     }
   }, [formMessage]);
-
+// Renderizado del formulario
   return (
     <motion.div className="profile-form-container" {...fadeInUp}>
       <h2>Añadir Nuevo Juego</h2>

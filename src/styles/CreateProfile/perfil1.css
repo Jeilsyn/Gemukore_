@@ -83,7 +83,6 @@ textarea.form-input {
   width:100%;
 }
 
-/* Hover y focus */
 .form-group select:hover,
 .form-group select:focus {
   border-color: #00faff;
@@ -91,7 +90,6 @@ textarea.form-input {
   background-color: rgba(13, 27, 42, 1);
 }
 
-/* Opciones */
 .form-group select option {
   background-color: #0d1b2a;
   color: #e0f0ff;
@@ -130,7 +128,6 @@ button{
   box-shadow:0 0 2px lightblue;
 }
 
-/* Modal.css */
 .modal-overlay {
   position: fixed;
   top: 0;

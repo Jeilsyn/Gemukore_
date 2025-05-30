@@ -1,4 +1,4 @@
-import { databases,account } from "./appwriteClient.js"; // Asegúrate que esté bien importado
+import { databases, account } from "./appwriteClient.js"; // Asegúrate que esté bien importado
 import { Query } from "appwrite";
 /* import fs from 'fs';
 import path from 'path';
@@ -16,9 +16,19 @@ const MATCHES_COLLECTION = "68188f96001e495758a2";
 const LIKES_COLLECTION = "681894a3001f3d2e9a0e";
 const USUARIO_GAME_INFO_COLLECTION_ID = "681f603e00343d636ac5";
 const TUTORIALES_COLLECTION_ID = "682203a70001320efb74";
-const ADMIN_ID='682a1d8a003387bdeeb7'
+const ADMIN_ID = "682a1d8a003387bdeeb7";
 
-/* // Ejecuta esta función una sola vez
+/* // Ejecuta esta función una sola vez, con esto arreglue lo del problema de la fotos, para poder visualizarla y no solo previsualizarla.
+
+
+Esta función la he creado ya que tuve un problema con el formato con el
+que se guardaba los enlaces de las imágenes de los buckets, ya que en vez de guardarse con
+view, se guarda con preview, lo que no permite visualizar la foto. Por ende lo que hago es
+básicamente alterar el enlace de todos los documentos que se guardaron con ese fallo, para no
+cambiarlos de forma manual, por eso solo la ejecute una vez y ya, la he dejado comentada
+para explicar como lo resolví el problema.
+
+
 export async function corregirURLsPreview() {
   try {
     const response = await databases.listDocuments(
@@ -52,14 +62,23 @@ export async function corregirURLsPreview() {
   }
 }
  */
-export async function createUserProfile(profileData, userId) {
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//GESTIÓN DE USUARIOS Y PERFILES
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+/* crea un documento de perfil de usuario con los datos proporcionados y el ID
+del usuario.
+ */ export async function createUserProfile(profileData, userId) {
   try {
     const response = await databases.createDocument(
       DATABASE_ID,
       USUARIOS_COLLECTION_ID,
       userId,
       {
-        ...profileData, 
+        ...profileData,
       }
     );
     return response;
@@ -91,6 +110,10 @@ export const uploadProfileImage = async (file, userId) => {
     throw error;
   }
 };
+
+//Obtiene el perfil de un usuario por su ID y ajusta la URL de la foto de perfil si
+/* es que es necesario.
+ */
 export async function getUserProfile(userId) {
   try {
     const response = await databases.getDocument(
@@ -99,7 +122,7 @@ export async function getUserProfile(userId) {
       userId
     );
 
-    // Transformar la foto_perfil_url (preview) en una URL view 
+    // Transformar la foto_perfil_url (preview) en una URL view
     if (
       response.foto_perfil_url &&
       response.foto_perfil_url.includes("/preview")
@@ -117,6 +140,8 @@ export async function getUserProfile(userId) {
   }
 }
 
+//actualiza los datos del perfil de usuario
+
 export async function updateUserProfile(userId, profileData) {
   try {
     const response = await databases.updateDocument(
@@ -131,7 +156,15 @@ export async function updateUserProfile(userId, profileData) {
     throw err;
   }
 }
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+//VIDEOJUEGOS
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+/*Obtiene todos los videojuegos de la colección, y realiza paginación si es
+que es necesario (ya que en las colecciones de Appwrite los documentos se almacenan por
+páginas).*/
 export async function getAllVideoGames() {
   let allGames = [];
   let lastId = null;
@@ -167,6 +200,8 @@ export async function getAllVideoGames() {
   }
 }
 
+
+//busca videojeugos por nombre usando lo que haya metido el usuario.
 export async function searchVideoGames(searchTerm) {
   try {
     const response = await databases.listDocuments(
@@ -180,6 +215,13 @@ export async function searchVideoGames(searchTerm) {
     throw err;
   }
 }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//PREFERENCIAS Y PERFILES DE JUEGOS DEL USUARIO 
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 // Crear el perfil de juegos preferidos del usuario
 export async function createUserGamesProfile(profileData) {
@@ -203,10 +245,10 @@ export async function createUserGamesProfile(profileData) {
         usuario_id: profileData.$id,
         ...profileData,
       },
-      [] 
+      []
     );
 
-    console.log("Documento creado:", response); 
+    console.log("Documento creado:", response);
     return response;
   } catch (err) {
     console.error("Error detallado al crear perfil de juego:", {
@@ -236,6 +278,40 @@ export async function getUserGamesPreferences(userId) {
 }
 
 
+export async function getUserGamesPreferencesWithNames(userId) {
+  try {
+    const prefs = await getUserGamesPreferences(userId);
+    const allGames = await getAllVideoGames();
+    const gameMap = {};
+    allGames.forEach((game) => {
+      gameMap[game.$id] = game.nombre;
+    });
+
+    return prefs.map((pref) => ({
+      ...pref,
+      nombre: gameMap[pref.videojuego_id.$id] || "Juego desconocido",
+    }));
+  } catch (err) {
+    console.error("Error combinando preferencias con nombres de juegos:", err);
+    throw err;
+  }
+}
+
+
+export const deleteUserGamePreference = async (userGameId) => {
+  try {
+    await databases.deleteDocument(
+      DATABASE_ID,
+      USUARIOS_JUEGOS_COLLECTION_ID,
+      userGameId
+    );
+  } catch (err) {
+    console.error("Error :", err);
+    throw err;
+  }
+};
+
+
 /*Solo una vez
 
 export async function cargarVideojuegos() {
@@ -247,12 +323,21 @@ export async function cargarVideojuegos() {
       juego
     );
   }
-  console.log("🎮 Todos los videojuegos han sido cargados.");
+  console.log(" Todos los videojuegos han sido cargados.");
 }
  */
 
 
-//EN cuanto a Match
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//MATCH Y LIKE 
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+//:devuelve todos los usuarios disponibles para match, excluyendo los que ya hicieron match, fueron rechazados o son admin
 export async function getAllUsers(currentUserId) {
   const allUsers = await databases.listDocuments(
     DATABASE_ID,
@@ -274,9 +359,11 @@ export async function getAllUsers(currentUserId) {
   );
 
   const matchedIds = matches.documents
-    .filter((match) => match.usuarioss_ids?.some((u) => u.$id === currentUserId))
+    .filter((match) =>
+      match.usuarioss_ids?.some((u) => u.$id === currentUserId)
+    )
     .flatMap((match) => match.usuarioss_ids.map((u) => u.$id))
-    .filter((id) => id !== currentUserId  );
+    .filter((id) => id !== currentUserId);
 
   const rejectedIds = likes.documents
     .filter((like) => like.estado === "rechazado_receptor")
@@ -285,10 +372,16 @@ export async function getAllUsers(currentUserId) {
   const excludedIds = new Set([...rejectedIds, ...matchedIds, ADMIN_ID]);
 
   return allUsers.documents.filter(
-    (user) => user.$id !== currentUserId && !excludedIds.has(user.$id) &&  user.$id !== ADMIN_ID
+    (user) =>
+      user.$id !== currentUserId &&
+      !excludedIds.has(user.$id) &&
+      user.$id !== ADMIN_ID
   );
 }
-// Create a new like
+
+
+
+// crea un like de un usuario a otro, con un estado(pendiente,rechazado,etc)
 export async function createLike(
   emisorId,
   receptorId,
@@ -304,10 +397,11 @@ export async function createLike(
     emisor_id: emisorId,
     receptor_id: receptorId,
     fecha_like: new Date().toISOString(),
-    estado: estado, 
+    estado: estado,
   });
 }
 
+//marca un usuario como “rechazado”(skip) si ya existe un like, o crea uno nuevo con ese estado
 export async function skipUser(emisorId, receptorId) {
   try {
     //  Buscar si ya hay un like de ese emisor al receptor
@@ -353,6 +447,7 @@ export async function skipUser(emisorId, receptorId) {
   }
 }
 
+//R
 export async function getPendingLikes(userId) {
   if (!userId || typeof userId !== "string") {
     throw new Error("ID de usuario inválido");
@@ -370,7 +465,7 @@ export async function getPendingLikes(userId) {
   return response.documents;
 }
 
-
+//actualiza el estado o información de un like
 export async function updateLike(likeId, data) {
   if (!likeId || typeof likeId !== "string") {
     throw new Error("ID de like inválido");
@@ -392,7 +487,6 @@ async function generateTeamId(userA, userB) {
     .slice(0, 36);
 }
 
-
 // Asegura que exista un equipo y que ambos usuarios estén dentro
 async function ensureMatchTeam(userA, userB) {
   const teamId = await generateTeamId(userA, userB);
@@ -408,9 +502,9 @@ async function ensureMatchTeam(userA, userB) {
         teamId,
         ID.unique(),
         ["member"],
-        undefined, // email no 
-        undefined, // phone no 
-        undefined, // name no 
+        undefined, // email no
+        undefined, // phone no
+        undefined, // name no
         `user:${userA}` // user ID
       );
       await teams.createMembership(
@@ -481,31 +575,10 @@ export async function createMatch(userA, userB) {
   }
 }
 
-// Función createChatForMatch corregida
-//********************************************************************************************************************************* */
 
-export async function getUserGamesPreferencesWithNames(userId) {
-  try {
-    const prefs = await getUserGamesPreferences(userId); 
-    const allGames = await getAllVideoGames();
-    const gameMap = {};
-    allGames.forEach((game) => {
-      gameMap[game.$id] = game.nombre; 
-    });
-
-    return prefs.map((pref) => ({
-      ...pref,
-      nombre: gameMap[pref.videojuego_id.$id] || "Juego desconocido", 
-    }));
-  } catch (err) {
-    console.error("Error combinando preferencias con nombres de juegos:", err);
-    throw err;
-  }
-}
 
 //Tarjeta Pokemon/// Me refiero al userCard
 export async function getMatchesWithGameInfo(userId) {
-
   try {
     //Obtener todos los matches del usuario
     const matchesResponse = await databases.listDocuments(
@@ -516,9 +589,9 @@ export async function getMatchesWithGameInfo(userId) {
 
     //  Filtrar matches que incluyen al usuario actual
     const userMatches = matchesResponse.documents.filter((match) => {
-      const userIds = (match.usuarioss_ids || []).map(u => 
-        typeof u === 'string' ? u : u?.$id
-      ).filter(Boolean);
+      const userIds = (match.usuarioss_ids || [])
+        .map((u) => (typeof u === "string" ? u : u?.$id))
+        .filter(Boolean);
       return userIds.includes(userId);
     });
 
@@ -532,8 +605,8 @@ export async function getMatchesWithGameInfo(userId) {
         try {
           //  Encontrar el otro usuario en el match
           const otherUserId = (match.usuarioss_ids || [])
-            .map(u => typeof u === 'string' ? u : u?.$id)
-            .find(id => id && id !== userId);
+            .map((u) => (typeof u === "string" ? u : u?.$id))
+            .find((id) => id && id !== userId);
 
           if (!otherUserId) {
             console.warn(" Error:", match.$id);
@@ -560,7 +633,7 @@ export async function getMatchesWithGameInfo(userId) {
               DATABASE_ID,
               USUARIO_GAME_INFO_COLLECTION_ID,
               [Query.equal("usuario_id", otherUserId)]
-            )
+            ),
           ]);
 
           console.log(" Games prefs:", gamesPrefs.documents.length);
@@ -568,11 +641,12 @@ export async function getMatchesWithGameInfo(userId) {
 
           //  Crear mapa de información de juegos
           const gameInfoMap = {};
-          gameInfos.documents.forEach(info => {
-            const gameId = typeof info.juego_id === 'string' 
-              ? info.juego_id 
-              : info.juego_id?.$id;
-            
+          gameInfos.documents.forEach((info) => {
+            const gameId =
+              typeof info.juego_id === "string"
+                ? info.juego_id
+                : info.juego_id?.$id;
+
             if (gameId) {
               gameInfoMap[gameId] = info;
             }
@@ -582,38 +656,35 @@ export async function getMatchesWithGameInfo(userId) {
           const gamesWithInfo = await Promise.all(
             gamesPrefs.documents.map(async (pref) => {
               try {
-                const gameId = typeof pref.videojuego_id === 'string' 
-                  ? pref.videojuego_id 
-                  : pref.videojuego_id?.$id;
+                const gameId =
+                  typeof pref.videojuego_id === "string"
+                    ? pref.videojuego_id
+                    : pref.videojuego_id?.$id;
 
                 if (!gameId) {
                   console.warn(" Invalid game ID in pref:", pref);
                   return null;
                 }
 
-                const gameDetails = await databases.getDocument(
-                  DATABASE_ID,
-                  VIDEOJUEGOS_COLLECTION_ID,
-                  gameId
-                ).catch(() => null);
+                const gameDetails = await databases
+                  .getDocument(DATABASE_ID, VIDEOJUEGOS_COLLECTION_ID, gameId)
+                  .catch(() => null);
 
-
-
-          if (
-            otherUser.foto_perfil_url &&
-            otherUser.foto_perfil_url.includes("/preview")
-          ) {
-            const fileId = otherUser.foto_perfil_url
-              .split("/files/")[1]
-              ?.split("/")[0];
-            otherUser.foto_perfil_url = `https://fra.cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${fileId}/view?project=680e27de001ffc71f5a7`;
-          }
+                if (
+                  otherUser.foto_perfil_url &&
+                  otherUser.foto_perfil_url.includes("/preview")
+                ) {
+                  const fileId = otherUser.foto_perfil_url
+                    .split("/files/")[1]
+                    ?.split("/")[0];
+                  otherUser.foto_perfil_url = `https://fra.cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${fileId}/view?project=680e27de001ffc71f5a7`;
+                }
 
                 const gameInfo = gameInfoMap[gameId];
 
                 console.log(` Processing game ${gameId}:`, {
                   hasInfo: !!gameInfo,
-                  gameName: gameDetails?.nombre
+                  gameName: gameDetails?.nombre,
                 });
 
                 return {
@@ -623,7 +694,7 @@ export async function getMatchesWithGameInfo(userId) {
                   nivel_juego: pref.nivel_juego,
                   favorito: pref.favorito,
                   nickname_en_juego: gameInfo?.nickname_en_juego || null,
-                  rol: gameInfo?.rol || null
+                  rol: gameInfo?.rol || null,
                 };
               } catch (error) {
                 console.error(" Error processing game pref:", error);
@@ -660,8 +731,8 @@ export async function getMatchesWithGameInfo(userId) {
 
 
 export async function debugUserGameInfo(userId) {
-  console.log("🔍 Starting debug for user:", userId);
-  
+  console.log(" Starting debug for user:", userId);
+
   try {
     //  Obtener todos los juegos del usuario
     const userGames = await databases.listDocuments(
@@ -669,36 +740,39 @@ export async function debugUserGameInfo(userId) {
       USUARIOS_JUEGOS_COLLECTION_ID,
       [Query.equal("usuario_id", userId)]
     );
-    
-    console.log("🎮 User games found:", userGames.documents.length);
-    
+
+    console.log(" User games found:", userGames.documents.length);
+
     // Obtener toda la información de juegos del usuario
     const gameInfos = await databases.listDocuments(
       DATABASE_ID,
       USUARIO_GAME_INFO_COLLECTION_ID,
       [Query.equal("usuario_id", userId)]
     );
-    
+
     console.log(" Game info entries found:", gameInfos.documents.length);
-    
+
     // 3. Verificar cada juego
     const results = await Promise.all(
       userGames.documents.map(async (gamePref) => {
-        const gameId = typeof gamePref.videojuego_id === 'string' 
-          ? gamePref.videojuego_id 
-          : gamePref.videojuego_id?.$id;
-        
+        const gameId =
+          typeof gamePref.videojuego_id === "string"
+            ? gamePref.videojuego_id
+            : gamePref.videojuego_id?.$id;
+
         if (!gameId) {
           return {
             gamePref,
             status: "INVALID_ID",
-            gameInfo: null
+            gameInfo: null,
           };
         }
-        
+
         // Buscar información del juego
-        const gameInfo = gameInfos.documents.find(info => info.juego_id === gameId);
-        
+        const gameInfo = gameInfos.documents.find(
+          (info) => info.juego_id === gameId
+        );
+
         // Verificar si el juego existe
         let gameExists;
         try {
@@ -711,48 +785,39 @@ export async function debugUserGameInfo(userId) {
         } catch {
           gameExists = false;
         }
-        
+
         return {
           gamePref,
           gameId,
           gameExists,
           gameInfo,
-          status: gameInfo ? "FOUND" : "NOT_FOUND"
+          status: gameInfo ? "FOUND" : "NOT_FOUND",
         };
       })
     );
-    
+
     console.log("Debugeando:", results);
-    
+
     // 4. Mostrar resumen
     const summary = {
       totalGames: results.length,
-      gamesWithInfo: results.filter(r => r.status === "FOUND").length,
-      gamesWithoutInfo: results.filter(r => r.status === "NOT_FOUND").length,
-      invalidIds: results.filter(r => r.status === "INVALID_ID").length,
-      nonExistentGames: results.filter(r => !r.gameExists).length
+      gamesWithInfo: results.filter((r) => r.status === "FOUND").length,
+      gamesWithoutInfo: results.filter((r) => r.status === "NOT_FOUND").length,
+      invalidIds: results.filter((r) => r.status === "INVALID_ID").length,
+      nonExistentGames: results.filter((r) => !r.gameExists).length,
     };
-    
-    
+
     return {
       results,
-      summary
+      summary,
     };
-    
   } catch (error) {
     console.error("  error:", error);
     throw error;
   }
 }
 
-
-
-
-
-
-
-
-// Funciones adicionales para manejar la información de juegos
+// Crear el perfil del usuario en relacion a un videojuego 
 export async function createUserGameInfo(userId, gameId, data) {
   try {
     return await databases.createDocument(
@@ -772,6 +837,16 @@ export async function createUserGameInfo(userId, gameId, data) {
   }
 }
 
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//GAME INFO 
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+//permite obtener el perfil del anterior 
 export async function getUserGameInfo(userId) {
   try {
     const response = await databases.listDocuments(
@@ -785,7 +860,7 @@ export async function getUserGameInfo(userId) {
     throw err;
   }
 }
-
+//inserta o actualiza la informacion de juego de un usuario para un juego en especifico
 export async function upsertUserGameInfo(userId, gameId, data) {
   try {
     const existing = await databases.listDocuments(
@@ -826,7 +901,7 @@ export async function upsertUserGameInfo(userId, gameId, data) {
     throw err;
   }
 }
-
+//obtiene la informacion de un usuario sobre un juego especifico
 export async function getUserGameInfoByGame(userId, gameId) {
   try {
     const response = await databases.listDocuments(
@@ -845,6 +920,7 @@ export async function getUserGameInfoByGame(userId, gameId) {
   }
 }
 
+//elimina la informacion de juego de un usuario
 export async function deleteUserGameInfo(documentId) {
   try {
     return await databases.deleteDocument(
@@ -858,8 +934,15 @@ export async function deleteUserGameInfo(documentId) {
   }
 }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-//Tutoriales 
+//TUTORIALES
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+//Tutoriales
 export async function getAllTutorials() {
   try {
     const response = await databases.listDocuments(
@@ -874,16 +957,18 @@ export async function getAllTutorials() {
   }
 }
 
+
+//busca tutoriales filtrando por videojuego o nivel recomendado
 export async function getTutorialsByFilters(videojuegoId = null, nivel = null) {
   try {
     let queries = [];
-    
+
     if (videojuegoId) {
-      queries.push(Query.equal('videojuego_id', videojuegoId));
+      queries.push(Query.equal("videojuego_id", videojuegoId));
     }
-    
+
     if (nivel) {
-      queries.push(Query.equal('nivel_recomendado', nivel));
+      queries.push(Query.equal("nivel_recomendado", nivel));
     }
 
     const response = await databases.listDocuments(
@@ -899,6 +984,7 @@ export async function getTutorialsByFilters(videojuegoId = null, nivel = null) {
   }
 }
 
+//trae la informacion de un tutorial por su ID
 export async function getTutorialById(tutorialId) {
   try {
     const response = await databases.getDocument(
@@ -913,6 +999,7 @@ export async function getTutorialById(tutorialId) {
   }
 }
 
+//crea un nuevo tutorial
 export async function createTutorial(tutorialData) {
   try {
     const response = await databases.createDocument(
@@ -928,6 +1015,7 @@ export async function createTutorial(tutorialData) {
   }
 }
 
+//actualiza los datos de un tutorial
 export async function updateTutorial(tutorialId, tutorialData) {
   try {
     const response = await databases.updateDocument(
@@ -943,6 +1031,7 @@ export async function updateTutorial(tutorialId, tutorialData) {
   }
 }
 
+//eliminar tutorial 
 export async function deleteTutorial(tutorialId) {
   try {
     const response = await databases.deleteDocument(
@@ -957,49 +1046,49 @@ export async function deleteTutorial(tutorialId) {
   }
 }
 
+////---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//ADMINISTRAIÓN USUARIOS 
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-export const deleteUserGamePreference = async (userGameId) => {
-  try {
-    await databases.deleteDocument(
-      DATABASE_ID,
-      USUARIOS_JUEGOS_COLLECTION_ID,
-      userGameId
-    );
-  } catch (err) {
-    console.error("Error :", err);
-    throw err;
-  }
-};
-
-////////////////////////////////////////////
+////////////////////////////////////////////cambia el estado de bloqueo de un usuario llamando a un endpoint backend
 export const updateUserStatus = async (userId, block) => {
-  const response = await fetch('https://gemukore-backend.onrender.com/api/bloquear', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId, block })
-  });
+  const response = await fetch(
+    "https://gemukore-backend.onrender.com/api/bloquear",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, block }),
+    }
+  );
 
   const data = await response.json();
 
   if (!data.success) {
-    throw new Error(
-      `Estado no cambiado (actual: ${data.actualStatus})`
-    );
+    throw new Error(`Estado no cambiado (actual: ${data.actualStatus})`);
   }
 
   return data;
 };
+
+
+
+//******************************************************************* */
 export const deleteUserFromAuth = async (userId) => {
   try {
-    const response = await fetch('https://gemukore-backend.onrender.com/api/eliminar-usuario', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userId }),
-      // credentials: 'include' // ¡Comenta esto si no usas cookies!
-    });
+    const response = await fetch(
+      "https://gemukore-backend.onrender.com/api/eliminar-usuario",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+        // credentials: 'include' // ¡Comenta esto si no usas cookies!
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -1008,75 +1097,11 @@ export const deleteUserFromAuth = async (userId) => {
 
     return await response.json();
   } catch (err) {
-    console.error('Error en deleteUserFromAuth:', err);
-    throw new Error(err.message || 'Error de conexión');
+    console.error("Error en deleteUserFromAuth:", err);
+    throw new Error(err.message || "Error de conexión");
   }
 };
-export async function getTutorialStats() {
-  try {
-    // Primero obtenemos los tutoriales sin incluir los videojuegos
-    const response = await databases.listDocuments(
-      DATABASE_ID,
-      TUTORIALES_COLLECTION_ID,
-      [
-        Query.select(['$id', 'titulo', 'nivel_recomendado', 'vistas', 'videojuego_id']),
-        Query.orderDesc("vistas"),
-        Query.limit(10)
-      ]
-    );
 
-    // Obtenemos todos los IDs de videojuegos únicos
-    const gameIds = [...new Set(response.documents.map(t => t.videojuego_id))];
-    
-    // Obtenemos los nombres de los videojuegos
-    const gamesResponse = await databases.listDocuments(
-      DATABASE_ID,
-      VIDEOJUEGOS_COLLECTION_ID,
-      [
-        Query.select(['$id', 'nombre']),
-        Query.equal('$id', gameIds)
-      ]
-    );
-
-    // Creamos un mapa de IDs a nombres
-    const gamesMap = gamesResponse.documents.reduce((map, game) => {
-      map[game.$id] = game.nombre;
-      return map;
-    }, {});
-
-    // Combinamos los datos
-    const tutorialsWithNames = response.documents.map(tutorial => ({
-      ...tutorial,
-      gameName: gamesMap[tutorial.videojuego_id] || 'N/A'
-    }));
-
-    return {
-      tutorialesPopulares: tutorialsWithNames,
-      totalTutoriales: response.total
-    };
-  } catch (err) {
-    console.error("Error obteniendo estadísticas de tutoriales:", err);
-    throw err;
-  }
-}
-
-
-
-/* * Incrementa el contador de vistas de un tutorial
- */
-export async function incrementTutorialViews(tutorialId) {
-  try {
-    await databases.updateDocument(
-      DATABASE_ID,
-      TUTORIALES_COLLECTION_ID,
-      tutorialId,
-      { vistas: Query.increment(1) }
-    );
-  } catch (err) {
-    console.error("Error incrementando vistas:", err);
-    throw err;
-  }
-}
 
 /**
  * Obtiene todos los usuarios para administración
@@ -1087,13 +1112,13 @@ export async function getAllUsersAdmin() {
       DATABASE_ID,
       USUARIOS_COLLECTION_ID,
       [
-        Query.select(['$id', 'nombre_usuario', 'email', 'foto_perfil_url']),
-        Query.limit(100)
+        Query.select(["$id", "nombre_usuario", "email", "foto_perfil_url"]),
+        Query.limit(100),
       ]
     );
-    
+
     // Transformar URLs de perfil si es necesario
-    return response.documents.map(user => {
+    return response.documents.map((user) => {
       if (user.foto_perfil_url && user.foto_perfil_url.includes("/preview")) {
         const fileId = user.foto_perfil_url.split("/files/")[1]?.split("/")[0];
         user.foto_perfil_url = `https://fra.cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${fileId}/view?project=680e27de001ffc71f5a7`;
@@ -1106,7 +1131,7 @@ export async function getAllUsersAdmin() {
   }
 }
 
-export async function blockUser(userId) {
+/* export async function blockUser(userId) {
   try {
     return await updateUserStatus(userId, true);
   } catch (err) {
@@ -1121,24 +1146,26 @@ export async function unblockUser(userId) {
   } catch (err) {
     console.error("Error desbloqueando usuario:", err);
     throw new Error(`No se pudo desbloquear: ${err.message}`);
-  }}/**
+  }
+}
+ *//**
  * Elimina un usuario completamente (Database y Auth)
  */
+
+ 
 export async function deleteUserAccount(userId) {
   try {
     // 1. Eliminar de Database
-    await databases.deleteDocument(
-      DATABASE_ID,
-      USUARIOS_COLLECTION_ID,
-      userId
-    );
-    
-    // 2. Eliminar de Auth 
+    await databases.deleteDocument(DATABASE_ID, USUARIOS_COLLECTION_ID, userId);
+
+    // 2. Eliminar de Auth
     const result = await deleteUserFromAuth(userId);
-    
-    return { 
-      success: true, 
-      message: result.message || "La eliminación del usuario se completará en 2-3 días." 
+
+    return {
+      success: true,
+      message:
+        result.message ||
+        "La eliminación del usuario se completará en 2-3 días.",
     };
   } catch (err) {
     console.error("Error eliminando cuenta de usuario:", err);
@@ -1146,12 +1173,12 @@ export async function deleteUserAccount(userId) {
   }
 }
 
-//eliminar usuario settings 
+//eliminar usuario settings
 export async function deleteUserAccountAndRedirect(userId, navigate) {
   try {
     // Primero cerrar la sesión activa (antes de eliminar la cuenta)
     try {
-      await account.deleteSession('current');
+      await account.deleteSession("current");
     } catch (sessionError) {
       console.warn("Error al cerrar sesión:", sessionError);
     }
@@ -1161,7 +1188,7 @@ export async function deleteUserAccountAndRedirect(userId, navigate) {
       USUARIOS_JUEGOS_COLLECTION_ID,
       USUARIO_GAME_INFO_COLLECTION_ID,
       LIKES_COLLECTION,
-      MATCHES_COLLECTION
+      MATCHES_COLLECTION,
     ];
 
     for (const collectionId of collectionsToClean) {
@@ -1171,9 +1198,9 @@ export async function deleteUserAccountAndRedirect(userId, navigate) {
           collectionId,
           [Query.equal("usuario_id", userId)]
         );
-        
+
         await Promise.all(
-          userDocs.documents.map(doc => 
+          userDocs.documents.map((doc) =>
             databases.deleteDocument(DATABASE_ID, collectionId, doc.$id)
           )
         );
@@ -1183,17 +1210,13 @@ export async function deleteUserAccountAndRedirect(userId, navigate) {
     }
 
     // Eliminar perfil principal
-    await databases.deleteDocument(
-      DATABASE_ID,
-      USUARIOS_COLLECTION_ID,
-      userId
-    );
+    await databases.deleteDocument(DATABASE_ID, USUARIOS_COLLECTION_ID, userId);
 
     //  Eliminar cuenta de autenticación (usando endpoint backend)
-    const authResponse = await fetch('http://localhost:3002/eliminar-usuario', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId })
+    const authResponse = await fetch("http://localhost:3002/eliminar-usuario", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId }),
     });
 
     if (!authResponse.ok) {
@@ -1203,22 +1226,21 @@ export async function deleteUserAccountAndRedirect(userId, navigate) {
     // Redirigir
     if (navigate) {
       navigate("/login", { replace: true });
-            window.location.reload()
-
+      window.location.reload();
     }
 
-    return { 
-      success: true, 
-      message: "Cuenta eliminada correctamente" 
+    return {
+      success: true,
+      message: "Cuenta eliminada correctamente",
     };
   } catch (error) {
     console.error("Error en deleteUserAccountAndRedirect:", error);
-    
+
     // Forzar redirección incluso si hay error
     if (navigate) {
       navigate("/", { replace: true });
     }
-    
+
     throw new Error(error.message || "Error al eliminar la cuenta");
   }
 }

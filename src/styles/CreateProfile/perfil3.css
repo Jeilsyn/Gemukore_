@@ -97,7 +97,6 @@ button:hover {
   width:40vw;
 }
 
-/* Animaciones */
 @keyframes fadeInUp {
   from {
     opacity: 0;

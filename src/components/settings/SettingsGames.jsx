@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { account } from "../../lib/services/appwrite/appwriteClient";
 import {
   getUserProfile,
-  updateUserProfile,
-  uploadProfileImage,
   getUserGamesPreferences,
   deleteUserGameInfo,
   deleteUserGamePreference,
@@ -16,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import { useFontSize } from "../../context/FontSizeContext";
 import "../../styles/Settings/setings2.css"
 
-
+// Componente para gestionar configuración relacionada con juegos del usuario
 export default function SettingsGame() {
     const { t } = useTranslation();
   const { fontSize, setFontSize } = useFontSize();
@@ -36,6 +34,7 @@ export default function SettingsGame() {
   const [loadingGames, setLoadingGames] = useState(false);
   const navigate = useNavigate();
 
+    // Cargar perfil del usuario y sus juegos al montar el componente
   useEffect(() => {
     async function fetchUserData() {
       try {
@@ -68,7 +67,7 @@ export default function SettingsGame() {
     }
     fetchUserData();
   }, []);
-
+  // Función para cargar los juegos preferidos del usuario y su info adicional
   const loadUserGames = async (userId) => {
     setLoadingGames(true);
     try {
@@ -91,31 +90,6 @@ export default function SettingsGame() {
   };
 
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
-    
-    if (name === "text_size") {
-      setFontSize(parseInt(value)); // Actualiza el tamaño global
-    }
-  };
-
-  const handleFileChange = (e) => {
-    const selected = e.target.files[0];
-    if (!selected) return;
-
-    if (!selected.type.startsWith("image/")) {
-      alert(t("settingsGame.errors.invalidImage"));
-      return;
-    }
-    if (selected.size > 5 * 1024 * 1024) {
-      alert(t("settingsGame.errors.imageTooLarge"));
-      return;
-    }
-
-    setFile(selected);
-    setPreviewUrl(URL.createObjectURL(selected));
-  };
 
 const handleDeleteGame = async (gameId, gameInfoId, userGameId) => {
   if (!window.confirm(t("settingsGame.confirmDelete"))) {

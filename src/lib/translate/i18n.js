@@ -5,7 +5,9 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import translationES from "../locales/es/translate.json";
 import translationEN from "../locales/en/translate.json";
 
-const resources = {
+//Configura traducción multilenguaje de la aplicación usando la librería i18next, , de esta manera
+/* la aplicación puede soportar varios idiomas
+ */const resources = {
   es: { translation: translationES },
   en: { translation: translationEN },
 };

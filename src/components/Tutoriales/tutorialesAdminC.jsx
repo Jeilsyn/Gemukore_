@@ -35,12 +35,12 @@ const AdminTutorialForm = () => {
     loadTutoriales();
     loadVideojuegos();
   }, []);
-
+  // Carga todos los tutoriales desde la base de datos
   const loadTutoriales = async () => {
     const data = await getAllTutorials();
     setTutoriales(data);
   };
-
+  // Carga todos los videojuegos para mostrar en el selector
   const loadVideojuegos = async () => {
     try {
       const data = await getAllVideoGames();
@@ -49,11 +49,11 @@ const AdminTutorialForm = () => {
       console.error('Error cargando videojuegos:', error);
     }
   };
-
+  // Actualiza el formulario cuando se escribe en un input
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
+  // Maneja el envío del formulario (crear o actualizar tutorial)
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -80,7 +80,7 @@ const AdminTutorialForm = () => {
       setMensaje(' Error al guardar el tutorial.');
     }
   };
-
+  // Carga los datos del tutorial a editar en el formulario
   const handleEdit = (tutorial) => {
     console.log("Tutorial para editar:", tutorial);
     setForm({
@@ -92,6 +92,7 @@ const AdminTutorialForm = () => {
     });
     setEditingId(tutorial.$id);
   };
+    // Elimina un tutorial después de confirmación
   const handleDelete = async (id) => {
     if (window.confirm('¿Estás seguro de eliminar este tutorial?')) {
       await deleteTutorial(id);

@@ -150,13 +150,11 @@ button:disabled {
   color: #99cfd6cc;
 }
 
-/* Hover solo si no está disabled */
 button:not(:disabled):hover {
   background: linear-gradient(90deg, #00ffff, #006688);
   box-shadow: 0 0 5px #00ffffcc;
 }
 
-/* Loader interno */
 .button-loader {
   font-style: italic;
   font-weight: 600;

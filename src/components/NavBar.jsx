@@ -18,7 +18,7 @@ const NavBar = () => {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const ADMIN = '682a1d8a003387bdeeb7';
-
+  // Cargar datos del perfil al montar el componente
   useEffect(() => {
     const fetchProfile = async () => {
       if (current) {
@@ -46,7 +46,7 @@ const NavBar = () => {
 
     fetchProfile();
   }, [current, t]);
-
+  // Detectar clics fuera del menú desplegable y cerrarlo
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -66,17 +66,17 @@ const NavBar = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [dropdownOpen]);
-
+  // Mostrar u ocultar el menú de perfil
   const handleProfileClick = () => {
     setDropdownOpen(!dropdownOpen);
   };
-
+  // Ir al perfil de usuario
   const goToProfile = () => {
     setDropdownOpen(false);
     setMenuOpen(false);
     navigate('/settings');
   };
-
+  // Mostrar u ocultar el menú móvil
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };

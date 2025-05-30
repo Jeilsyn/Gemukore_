@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { useFontSize } from "../../context/FontSizeContext";
 import "../../styles/Settings/seetings.css";
 
+// Componente principal de configuración del usuario
 export default function Settings() {
   const [form, setForm] = useState({
     nombre_usuario: "",
@@ -34,6 +35,8 @@ export default function Settings() {
   const { t, i18n } = useTranslation();
   const { fontSize, setFontSize } = useFontSize();
 
+
+   // Carga los datos del usuario y su perfil al montar el componente
   useEffect(() => {
     async function loadUserAndLanguage() {
       try {
@@ -69,6 +72,7 @@ export default function Settings() {
     loadUserAndLanguage();
   }, []);
 
+  // Maneja los cambios de los inputs del formulario
   const handleChange = async (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
@@ -88,7 +92,7 @@ export default function Settings() {
       }
     }
   };
-
+// Maneja la selección de imagen de perfil con validación
   const handleFileChange = (e) => {
     const selected = e.target.files[0];
     if (!selected) return;
@@ -106,6 +110,8 @@ export default function Settings() {
     setPreviewUrl(URL.createObjectURL(selected));
   };
 
+
+   // Maneja el envío del formulario para actualizar el perfil
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
@@ -129,7 +135,8 @@ export default function Settings() {
       alert(t("error.actualizarPerfil"));
     }
   };
-
+  
+// Elimina la cuenta del usuario con confirmación
   const handleDeleteAccount = async () => {
     setIsDeleting(true);
     try {

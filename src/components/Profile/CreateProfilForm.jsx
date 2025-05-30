@@ -12,6 +12,7 @@ import { fadeInUp, fadeIn, scaleFadeIn } from "../animations/animation";
 
 const BUCKET_ID = "680e342900053bdb9610";
 
+// Componente principal para la creación del perfil
 const CrearPerfil = () => {
   const [form, setForm] = useState({
     nombre_usuario: "",
@@ -49,6 +50,7 @@ const CrearPerfil = () => {
     loadUserData();
   }, [navigate]);
 
+  // Gestión del cambio de imagen y validaciones básicas
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (!selectedFile) return;
@@ -63,7 +65,7 @@ const CrearPerfil = () => {
     setFile(selectedFile);
     setPreviewUrl(URL.createObjectURL(selectedFile));
   };
-
+  // Subida de imagen al bucket de Appwrite con permisos adecuados
   const uploadImage = async (user) => {
     if (!file) return null;
     try {
@@ -84,16 +86,19 @@ const CrearPerfil = () => {
     }
   };
 
+    // Maneja los cambios en los inputs del formulario
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm({ ...form, [name]: type === "checkbox" ? checked : value });
   };
 
+    // Maneja los cambios en los selects
   const handleSelectChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
   };
 
+    // Manejo del envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -102,7 +107,7 @@ const CrearPerfil = () => {
       if (file) {
         imageUrl = await uploadImage(user);
       }
-
+      // Construcción del objeto perfil con datos obligatorios y por defecto
       const profileData = {
         nombre_usuario: form.nombre_usuario,
         descripcion: form.descripcion,
@@ -123,7 +128,7 @@ const CrearPerfil = () => {
       alert(`Error al crear perfil: ${err.message}`);
     }
   };
-
+  // Cierra el modal y redirige
   const handleCloseModal = () => {
     setShowModal(false);
     navigate("/LoadingPage", { state: { from: 'crearPerfil' } });
@@ -145,7 +150,7 @@ const CrearPerfil = () => {
           </select>
         </div>
 
-        
+
         <div className="form-group">
           <label>Idioma</label>
           <select name="idioma" value={form.idioma} onChange={handleSelectChange}>

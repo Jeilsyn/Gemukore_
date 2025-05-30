@@ -1,0 +1,26 @@
+.footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+  background: linear-gradient(90deg, #0a0f1e, #06172f);
+  box-shadow: 0 0 15px #00f0ff88;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  height: 5vh;
+  font-family: 'Orbitron', sans-serif;
+  color: #b6faffa8;
+  font-weight: 800;
+  font-size: 0.7rem;
+  text-shadow: 0 0 3px #00eeff96, 0 0 5px #00bfff83;
+  user-select: none;
+  padding: 0 2rem;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    height: 4vh;
+    font-size: 0.4rem;
+    padding: 0 1rem;
+  }
+}

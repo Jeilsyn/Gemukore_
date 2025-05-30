@@ -8,12 +8,12 @@ const UserContext = createContext();
 export function useUser() {
   return useContext(UserContext);
 }
-
+// Componente proveedor del contexto de usuario
 export function UserProvider(props) {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const [canAccessCreatePerfil, setcanAccessCreatePerfil] = useState(false);
-
+  // Función para iniciar sesión o también se usa en registro
   async function login(email, password, isRegistering = false) {
     try {
       await account.createEmailPasswordSession(email, password);
@@ -47,6 +47,7 @@ export function UserProvider(props) {
       throw "No está registrado el usuario introducido";
     }
   }
+    // Función para aplicar bonificación si ha pasado más de 24 horas desde la última
   async function bonificarSiCorresponde(userId) {
     try {
       const profile = await getUserProfile(userId);
@@ -65,18 +66,20 @@ export function UserProvider(props) {
       console.error(" Error al aplicar bonificación:", error);
     }
   }
+
+    // Función para cerrar sesión
   async function logout() {
     await account.deleteSession("current");
     setUser(null);
     navigate("/login");
   }
-
+  // Función para registrar un nuevo usuario
   async function register(email, password, username) {
     await account.create(ID.unique(), email, password, username);
     await login(email, password, true);
     navigate("/crearPerfil"); // Aquí se creará el perfil del usuario
   }
-
+  // Función para inicializar estado al montar componente
   async function init() {
     try {
       const loggedIn = await account.get();
@@ -85,11 +88,12 @@ export function UserProvider(props) {
       setUser(null);
     }
   }
-
+  // Ejecutar la inicialización solo una vez al montar el componente
   useEffect(() => {
     init();
   }, []);
 
+    // Proveer el contexto con datos y funciones
   return (
     <UserContext.Provider value={{
       current: user,

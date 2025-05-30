@@ -11,7 +11,6 @@
   font-family: 'Orbitron', sans-serif;
 }
 
-/* Logo fuera del nav, a la izquierda */
 .logo-link {
   display: flex;
   align-items: center;
@@ -30,7 +29,6 @@
   filter: drop-shadow(0 0 8px #00ffff);
 }
 
-/* Nav con menú a la derecha */
 .navbar {
   flex-grow: 1;
   display: flex;
@@ -47,7 +45,6 @@
   align-items: center;
 }
 
-/* Perfil y dropdown */
 .nav-profile {
   position: relative;
   cursor: pointer;
@@ -157,7 +154,6 @@
   transform: scale(1.15);
 }
 
-/* Dropdown menu */
 .dropdown-menu {
   position: absolute;
   right: 0;
@@ -190,7 +186,6 @@
   background-color: #005f99;
 }
 
-/* Responsive para tablets */
 @media (max-width: 1024px) and (min-width: 769px) {
   .header {
     padding: 0 1.5rem;
@@ -262,7 +257,6 @@
   transform: rotate(-45deg);
 }
 
-/* Responsive para móviles */
 @media (max-width: 768px) {
   .nav-list {
     display: none;

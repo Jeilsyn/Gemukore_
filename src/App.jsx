@@ -1,5 +1,6 @@
 import { BrowserRouter as Router } from 'react-router-dom';
 import NavBar from "./components/NavBar.jsx";
+import Footer from './components/Footer.jsx';
 import { UserProvider } from "./context/AuthContext";
 import AppRoutes from "./components/routes/AppRoutes.jsx";
 import { useEffect } from 'react';
@@ -13,6 +14,7 @@ function App() {
       <UserProvider>
         <NavBar />
         <AppRoutes />
+        <Footer/>
       </UserProvider>
     </Router>
   );
