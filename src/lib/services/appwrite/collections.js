@@ -1213,7 +1213,7 @@ export async function deleteUserAccountAndRedirect(userId, navigate) {
     await databases.deleteDocument(DATABASE_ID, USUARIOS_COLLECTION_ID, userId);
 
     //  Eliminar cuenta de autenticación (usando endpoint backend)
-    const authResponse = await fetch("http://localhost:3002/eliminar-usuario", {
+    const authResponse = await fetch("https://gemukore-backend.onrender.com/api/eliminar-usuario", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId }),
