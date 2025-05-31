@@ -7,3 +7,14 @@ export const account = new Account(client);
 export const databases = new Databases(client);
 export const storage= new Storage(client);
 export const teams = new Teams(client);
+
+
+async function listarColecciones() {
+  try {
+    const response = await databases.listCollections('tu_database_id');
+    console.log('Listando colecciones:', response);
+  } catch (error) {
+    console.error('Error al listar colecciones:', error.message);
+  }
+}
+

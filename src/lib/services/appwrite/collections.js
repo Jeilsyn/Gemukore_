@@ -18,6 +18,13 @@ const USUARIO_GAME_INFO_COLLECTION_ID = "681f603e00343d636ac5";
 const TUTORIALES_COLLECTION_ID = "682203a70001320efb74";
 const ADMIN_ID = "682a1d8a003387bdeeb7";
 
+
+
+
+
+
+
+
 /* // Ejecuta esta función una sola vez, con esto arreglue lo del problema de la fotos, para poder visualizarla y no solo previsualizarla.
 
 
