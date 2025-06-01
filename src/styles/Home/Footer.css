@@ -1,11 +1,13 @@
 .footer {
-  position: sticky;
+  position: fixed;
   bottom: 0;
+  left: 0;
+  width: 100%;
   z-index: 100;
   background: linear-gradient(90deg, #0a0f1e, #06172f);
   box-shadow: 0 0 15px #00f0ff88;
   display: flex;
-  justify-content: right;
+  flex-direction: row-reverse;
   align-items: center;
   height: 5vh;
   font-family: 'Orbitron', sans-serif;
@@ -14,13 +16,6 @@
   font-size: 0.7rem;
   text-shadow: 0 0 3px #00eeff96, 0 0 5px #00bfff83;
   user-select: none;
-  padding: 0 2rem;
+  padding: 0 0rem;
 }
 
-@media (max-width: 768px) {
-  .footer {
-    height: 4vh;
-    font-size: 0.4rem;
-    padding: 0 1rem;
-  }
-}
