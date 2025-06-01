@@ -116,7 +116,7 @@ const handleDecision = async (like, decision) => {
     );
   }
 
-  if (error) {
+/*   if (error) {
     return (
       <div className="error-container">
         <p>{error}</p>
@@ -125,7 +125,7 @@ const handleDecision = async (like, decision) => {
         </Button>
       </div>
     );
-  }
+  } */
 
   if (pending.length === 0) {
     return (
