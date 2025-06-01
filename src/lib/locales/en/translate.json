@@ -72,6 +72,8 @@
         }
     },
     "requests": {
+                "noPreferences": "Without prefrences",
+
         "title": "Requestsf",
         "noRequests": "You have no pending match requests.",
         "noImage": "No image",

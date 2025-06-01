@@ -72,6 +72,7 @@
         }
     },
     "requests": {
+       "noPreferences": "Sin preferencias",
         "title": "Solicitudes",
         "noRequests": "No tienes solicitudes de match pendientes.",
         "noImage": "Sin imagen",
