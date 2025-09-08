@@ -10,8 +10,8 @@ Gemukore es una red social innovadora diseñada específicamente para jugadores 
 
     Conectar a los jugadores y brindarles un espacio accesible para adentrarse en el mundo gamer sin presiones y sin miedo
 
-#✨ Funcionalidades Principales
-🤝** Interacción Social**
+# ✨ Funcionalidades Principales
+🤝**Interacción Social**
 
     Comunidad de jugadores - Sistema de amigos y seguidores
 
